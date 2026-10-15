@@ -14,3 +14,12 @@ https://github.com/Klerith/fernando-skills
 ```bash
 npx skills@latest add Klerith/fernando-skills
 ```
+
+## Comandos
+
+```bash
+npm run dev     # servidor de desarrollo (Turbopack)
+npm run build   # build de producción
+npm run start   # servir el build
+npm run lint    # ESLint (flat config en eslint.config.mjs)
+```
