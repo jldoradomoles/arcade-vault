@@ -10,8 +10,10 @@ export function Nav() {
   const { user, signOut } = useSession();
   const [open, setOpen] = useState(false);
 
-  const isLibrary = pathname === "/" || pathname.startsWith("/juegos");
+  const isHome = pathname === "/";
+  const isLibrary = pathname.startsWith("/biblioteca") || pathname.startsWith("/juegos");
   const isHall = pathname.startsWith("/salon");
+  const isAbout = pathname.startsWith("/acerca-de");
   const isAuth = pathname.startsWith("/acceso");
   const close = () => setOpen(false);
 
@@ -25,8 +27,10 @@ export function Nav() {
           </div>
         </Link>
         <div className="links">
-          <Link href="/" className={isLibrary ? "active" : ""}>Biblioteca</Link>
+          <Link href="/" className={isHome ? "active" : ""}>Inicio</Link>
+          <Link href="/biblioteca" className={isLibrary ? "active" : ""}>Biblioteca</Link>
           <Link href="/salon" className={isHall ? "active" : ""}>Salón de la Fama</Link>
+          <Link href="/acerca-de" className={isAbout ? "active" : ""}>Acerca de</Link>
         </div>
         <div className="spacer" />
         <div className="coin-counter">
@@ -53,8 +57,10 @@ export function Nav() {
       <div className={"av-mobile-backdrop" + (open ? " open" : "")} onClick={close} />
       <aside className={"av-mobile-panel" + (open ? " open" : "")}>
         <div className="pixel neon-cyan mb-4 text-[11px]">MENÚ</div>
-        <Link href="/" className={isLibrary ? "active" : ""} onClick={close}>Biblioteca</Link>
+        <Link href="/" className={isHome ? "active" : ""} onClick={close}>Inicio</Link>
+        <Link href="/biblioteca" className={isLibrary ? "active" : ""} onClick={close}>Biblioteca</Link>
         <Link href="/salon" className={isHall ? "active" : ""} onClick={close}>Salón de la Fama</Link>
+        <Link href="/acerca-de" className={isAbout ? "active" : ""} onClick={close}>Acerca de</Link>
         <Link href="/acceso" className={isAuth ? "active" : ""} onClick={close}>
           {user ? "Cuenta" : "Iniciar Sesión"}
         </Link>
