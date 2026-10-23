@@ -28,6 +28,8 @@ Hasta ahora el reproductor (`components/game-player.tsx`) es una simulación: el
 - Componente cliente `components/asteroids-canvas.tsx` que crea y destruye el motor y lo conecta a `GamePlayer`.
 - Integración en `components/game-player.tsx`: para `asteroids`, puntos, vidas y nivel vienen del motor; PAUSA congela el juego; FIN y la pérdida de la última vida abren el modal «FIN DEL JUEGO»; «JUGAR DE NUEVO» reinicia el juego; «GUARDAR PUNTUACIÓN» usa el `saveScore` existente con `game: "asteroids"`.
 - Línea de ayuda de controles bajo el marco CRT, solo para `asteroids`.
+- Leer `params` dentro de `<Suspense>` en `app/juegos/[id]/page.tsx` y `app/juegos/[id]/jugar/page.tsx` (el componente de página pasa la promesa a un hijo asíncrono, con un fallback mínimo). Sin esto Next 16 registra en consola el aviso «URL data outside of Suspense» en todos los juegos y no se cumple el criterio de consola limpia. Añadido durante la implementación.
+- Margen de gracia de 0,5 s tras absorber un golpe con el escudo (`SHIELD_GRACE`), para que los fragmentos del asteroide, que nacen pegados a la nave, no la maten en el acto. Añadido durante la implementación.
 - Los otros 7 juegos siguen con el reproductor simulado, sin cambios de comportamiento.
 
 **Fuera de alcance (para futuras specs):**
@@ -55,6 +57,7 @@ export const SPEEDS = [0, 85, 55, 32] as const;
 export const POINTS = [0, 100, 50, 20] as const;
 // + BIG_SHAPE, BIG_SHAPE_CHANCE, TRIPLE_DURATION, SHIELD_DURATION, SHIELD_PAD,
 //   POWERUP_TYPES, BOMB_CHANCE, BOMB_FLASH (mismos valores que game.js)
+// + SHIELD_GRACE = 0.5 (nuevo: no existe en game.js, ver Decisiones)
 
 export type AsteroidSize = 1 | 2 | 3;
 export type PowerUpType = "triple" | "shield" | "bomb";
@@ -148,6 +151,7 @@ Antes del paso 1, leer en `node_modules/next/dist/docs/01-app` la referencia de 
 - [ ] Al perder la tercera vida se abre el modal «FIN DEL JUEGO» con la puntuación final correcta.
 - [ ] Recoger el power-up `3` activa el disparo triple (3 balas en abanico) durante 8 s, con `TRIPLE Ns` visible en el canvas.
 - [ ] Recoger `E` activa un escudo visible que dura 8 s o hasta absorber un golpe (destruye ese asteroide y no resta vida).
+- [ ] Tras absorber un golpe con el escudo, los fragmentos que nacen junto a la nave no la matan durante los siguientes 0,5 s; pasado ese margen, un choque vuelve a restar una vida.
 - [ ] Recoger `B` muestra `BOMBA NOVA [B]`; pulsar `B` destruye todos los asteroides sin fragmentarlos, suma sus puntos y muestra el destello; sin bomba, `B` no hace nada.
 - [ ] PAUSA congela nave, asteroides, temporizadores y power-ups y muestra «EN PAUSA»; REANUDAR continúa sin saltos bruscos.
 - [ ] FIN abre el modal con el puntaje actual y deja de procesar entrada de juego.
@@ -175,6 +179,10 @@ Antes del paso 1, leer en `node_modules/next/dist/docs/01-app` la referencia de 
 - **No:** Supabase, auth o ranking real en esta spec. Cada uno pide su propia spec.
 - **Sí:** `onStats` solo ante cambios y no por frame.
 - **Sí:** el reinicio lo hace el modal («JUGAR DE NUEVO»), no `Espacio`. Evita conflictos con el campo de iniciales.
+- **Sí:** margen de gracia de 0,5 s (`SHIELD_GRACE`) tras absorber un golpe con el escudo. Cambio respecto a `game.js`, descubierto al probar el escudo: el asteroide se parte en el punto del impacto, así que los fragmentos nacen sobre la nave y, ya sin escudo, la mataban en el mismo frame, contradiciendo «no resta vida». No hay parpadeo de la nave durante el margen.
+- **No:** expulsar los fragmentos fuera del radio del escudo. Habría tocado `Asteroid.split()`, que se mantiene 1:1 con el original.
+- **Sí:** leer `params` dentro de `<Suspense>` en las páginas de detalle y de juego de `/juegos/[id]`. Es el arreglo que indica la guía de Next para el aviso «URL data outside of Suspense» (solo en desarrollo, no rompe el build) y, de paso, deja limpia la consola de los 8 juegos, no solo de Asteroids.
+- **No:** `export const instant = false` para silenciar el aviso. Desactiva la validación de navegación instantánea en vez de resolverla.
 - **Sí:** ignorar eventos de teclado cuyo `target` sea un `input`, y quitar los listeners al terminar la partida, para no bloquear la escritura en el modal.
 - **No:** controles táctiles. Es una decisión de UX aparte que afecta a todos los juegos.
 
