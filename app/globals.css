@@ -509,6 +509,15 @@ a { color: inherit; text-decoration: none; }
   text-shadow: 0 0 8px var(--yellow);
 }
 
+/* ASTEROIDS: contornos vectoriales (como el canvas del juego), distinto de los discos rellenos de ROCAS */
+.cover-asteroids { background: radial-gradient(ellipse at 52% 50%, #04202a 0, #010508 70%, #000); }
+.cover-asteroids::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: url("/covers/asteroids.svg") center / cover no-repeat;
+  filter: drop-shadow(0 0 5px rgba(0,245,255,0.55));
+}
+
 .cover-rana { background: linear-gradient(180deg,#001f2a,#0a0a18); }
 .cover-rana::after {
   content: "";

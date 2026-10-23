@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { GamePlayer } from "@/components/game-player";
 import { GAMES, getGame } from "@/lib/games";
 
@@ -6,7 +7,16 @@ export function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
 }
 
-export default async function JugarPage({ params }: PageProps<"/juegos/[id]/jugar">) {
+export default function JugarPage({ params }: PageProps<"/juegos/[id]/jugar">) {
+  // `params` se lee dentro de Suspense para que el shell estático no dependa de la URL
+  return (
+    <Suspense fallback={<div className="av-player" aria-busy="true" />}>
+      <Jugar params={params} />
+    </Suspense>
+  );
+}
+
+async function Jugar({ params }: { params: PageProps<"/juegos/[id]/jugar">["params"] }) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();

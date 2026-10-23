@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { GAMES, getGame } from "@/lib/games";
 import { seededScores } from "@/lib/scores";
 
@@ -7,7 +8,16 @@ export function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
 }
 
-export default async function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
+export default function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
+  // `params` se lee dentro de Suspense para que el shell estático no dependa de la URL
+  return (
+    <Suspense fallback={<div className="av-detail" aria-busy="true" />}>
+      <GameDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function GameDetail({ params }: { params: PageProps<"/juegos/[id]">["params"] }) {
   const { id } = await params;
   const game = getGame(id);
   if (!game) notFound();

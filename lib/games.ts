@@ -104,6 +104,17 @@ export const GAMES: Game[] = [
     best: 24,
     plays: "4.2K",
   },
+  {
+    id: "asteroids",
+    title: "ASTEROIDS",
+    short: "Sobrevive en un campo de asteroides en gravedad cero.",
+    long: "Pilota una nave en un espacio sin bordes: lo que sale por un lado entra por el otro. Dispara a las rocas para partirlas en fragmentos cada vez más pequeños y recoge power-ups: disparo triple, escudo temporal y la rara Bomba Nova. Tienes tres vidas y cada nivel llega más cargado.",
+    cat: "SHOOTER",
+    cover: "cover-asteroids",
+    color: "cyan",
+    best: 38600,
+    plays: "8.7K",
+  },
 ];
 
 export function getGame(id: string): Game | undefined {
