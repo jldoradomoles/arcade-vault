@@ -1,14 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getGames } from "@/lib/games";
-import {
-  FAQ,
-  FEATURES,
-  HOME_STATS,
-  PRICING_PERKS,
-  RECENT_SCORES,
-  TOP_PLAYERS,
-} from "@/lib/home";
+import { FAQ, FEATURES, HOME_STATS, PRICING_PERKS } from "@/lib/home";
+import { getRecentScores, getTopPlayersToday } from "@/lib/scores";
 import { FeatureIcon } from "./feature-icon";
 import { FloatingSilhouettes } from "./floating-silhouettes";
 import { MiniGameCard } from "./mini-game-card";
@@ -21,6 +15,50 @@ async function GamesRail() {
     <div className="mini-rail">
       {games.slice(0, 6).map((g) => (
         <MiniGameCard key={g.id} game={g} />
+      ))}
+    </div>
+  );
+}
+
+async function RecentScores() {
+  const rows = await getRecentScores();
+  if (rows.length === 0)
+    return (
+      <div className="tick-row">Aún no hay puntuaciones. ¡Sé el primero!</div>
+    );
+  return (
+    <div className="ticker">
+      {rows.map((r, i) => (
+        <div
+          key={r.id}
+          className="tick-row"
+          style={{ animationDelay: i * 60 + "ms" }}
+        >
+          <span className={"tk-p neon-" + r.color}>{r.player}</span>
+          <span className="tk-mid">▸ {r.game}</span>
+          <span className="tk-s">+{r.score.toLocaleString("es-ES")}</span>
+          <span className="tk-t">{r.ago}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+async function TopPlayers() {
+  const rows = await getTopPlayersToday();
+  if (rows.length === 0)
+    return <div className="top-list">Nadie ha jugado hoy todavía.</div>;
+  return (
+    <div className="top-list">
+      {rows.map((r, i) => (
+        <div key={r.rank} className={"top-row" + (i < 3 ? ` top${i + 1}` : "")}>
+          <span className="tp-rk">#{String(r.rank).padStart(2, "0")}</span>
+          <span className="tp-bar">
+            <span className="tp-fill" style={{ width: 100 - i * 16 + "%" }} />
+          </span>
+          <span className="tp-p">{r.player}</span>
+          <span className="tp-s">{r.score.toLocaleString("es-ES")}</span>
+        </div>
       ))}
     </div>
   );
@@ -129,22 +167,9 @@ export function HomePage() {
             <div className="ac-head">
               <div className="ac-title pixel">▸ ÚLTIMAS PUNTUACIONES</div>
             </div>
-            <div className="ticker">
-              {RECENT_SCORES.map((r, i) => (
-                <div
-                  key={r.player}
-                  className="tick-row"
-                  style={{ animationDelay: i * 60 + "ms" }}
-                >
-                  <span className={"tk-p neon-" + r.color}>{r.player}</span>
-                  <span className="tk-mid">▸ {r.game}</span>
-                  <span className="tk-s">
-                    +{r.score.toLocaleString("es-ES")}
-                  </span>
-                  <span className="tk-t">{r.ago}</span>
-                </div>
-              ))}
-            </div>
+            <Suspense fallback={<div className="ticker" aria-busy="true" />}>
+              <RecentScores />
+            </Suspense>
           </div>
 
           <div className="activity-card">
@@ -156,28 +181,9 @@ export function HomePage() {
                 VER SALÓN →
               </Link>
             </div>
-            <div className="top-list">
-              {TOP_PLAYERS.map((r, i) => (
-                <div
-                  key={r.rank}
-                  className={"top-row" + (i < 3 ? ` top${i + 1}` : "")}
-                >
-                  <span className="tp-rk">
-                    #{String(r.rank).padStart(2, "0")}
-                  </span>
-                  <span className="tp-bar">
-                    <span
-                      className="tp-fill"
-                      style={{ width: 100 - i * 16 + "%" }}
-                    />
-                  </span>
-                  <span className="tp-p">{r.player}</span>
-                  <span className="tp-s">
-                    {r.score.toLocaleString("es-ES")}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <Suspense fallback={<div className="top-list" aria-busy="true" />}>
+              <TopPlayers />
+            </Suspense>
           </div>
         </div>
       </Reveal>
