@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { GAMES, getGame } from "@/lib/games";
-import { seededScores } from "@/lib/scores";
-
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
-}
+import { getGame } from "@/lib/games";
+import { getTopScores } from "@/lib/scores";
 
 export default function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
   // `params` se lee dentro de Suspense para que el shell estático no dependa de la URL
@@ -17,12 +13,16 @@ export default function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
   );
 }
 
-async function GameDetail({ params }: { params: PageProps<"/juegos/[id]">["params"] }) {
+async function GameDetail({
+  params,
+}: {
+  params: PageProps<"/juegos/[id]">["params"];
+}) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
-  const scores = seededScores(id.length * 17 + 3, 10);
+  const scores = await getTopScores(id, 10);
   const podium = ["top1", "top2", "top3"];
 
   return (
@@ -53,12 +53,18 @@ async function GameDetail({ params }: { params: PageProps<"/juegos/[id]">["param
             </div>
             <div>
               <div className="l">Dificultad</div>
-              <div className="v text-yellow [text-shadow:0_0_6px_rgba(245,255,0,0.5)]">★ ★ ★ ☆ ☆</div>
+              <div className="v text-yellow [text-shadow:0_0_6px_rgba(245,255,0,0.5)]">
+                ★ ★ ★ ☆ ☆
+              </div>
             </div>
           </div>
           <div className="detail-actions">
-            <Link href={`/juegos/${game.id}/jugar`} className="btn xl pulse">▶  JUGAR AHORA</Link>
-            <Link href="/biblioteca" className="btn ghost lg">VOLVER AL VAULT</Link>
+            <Link href={`/juegos/${game.id}/jugar`} className="btn xl pulse">
+              ▶ JUGAR AHORA
+            </Link>
+            <Link href="/biblioteca" className="btn ghost lg">
+              VOLVER AL VAULT
+            </Link>
           </div>
         </div>
       </div>
@@ -66,12 +72,22 @@ async function GameDetail({ params }: { params: PageProps<"/juegos/[id]">["param
       <aside>
         <div className="leaderboard">
           <h3>MEJORES PUNTUACIONES</h3>
+          {scores.length === 0 && (
+            <div className="p-4 text-[12px] text-ink-faint">
+              Todavía no hay puntuaciones. Juega una partida y abre la lista.
+            </div>
+          )}
           {scores.map((r, i) => (
-            <div key={r.rank} className={"lb-row" + (podium[i] ? " " + podium[i] : "")}>
+            <div
+              key={r.rank}
+              className={"lb-row" + (podium[i] ? " " + podium[i] : "")}
+            >
               <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
               <div className="pl">
                 {r.name}
-                <div className="text-[10px] tracking-[0.1em] text-ink-faint">{r.date}</div>
+                <div className="text-[10px] tracking-[0.1em] text-ink-faint">
+                  {r.date}
+                </div>
               </div>
               <div className="sc">{r.score.toLocaleString("es-ES")}</div>
             </div>

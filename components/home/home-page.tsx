@@ -1,10 +1,30 @@
 import Link from "next/link";
-import { GAMES } from "@/lib/games";
-import { FAQ, FEATURES, HOME_STATS, PRICING_PERKS, RECENT_SCORES, TOP_PLAYERS } from "@/lib/home";
+import { Suspense } from "react";
+import { getGames } from "@/lib/games";
+import {
+  FAQ,
+  FEATURES,
+  HOME_STATS,
+  PRICING_PERKS,
+  RECENT_SCORES,
+  TOP_PLAYERS,
+} from "@/lib/home";
 import { FeatureIcon } from "./feature-icon";
 import { FloatingSilhouettes } from "./floating-silhouettes";
 import { MiniGameCard } from "./mini-game-card";
 import { Reveal } from "./reveal";
+
+// Los juegos vienen de Supabase (cookies()): se leen dentro de Suspense para no bloquear el shell estático
+async function GamesRail() {
+  const games = await getGames();
+  return (
+    <div className="mini-rail">
+      {games.slice(0, 6).map((g) => (
+        <MiniGameCard key={g.id} game={g} />
+      ))}
+    </div>
+  );
+}
 
 export function HomePage() {
   return (
@@ -13,19 +33,26 @@ export function HomePage() {
       <section className="home-hero">
         <FloatingSilhouettes />
         <div className="home-hero-inner">
-          <div className="hero-eyebrow pixel neon-yellow">▸ INSERTA UNA MONEDA<span className="blink">_</span></div>
+          <div className="hero-eyebrow pixel neon-yellow">
+            ▸ INSERTA UNA MONEDA<span className="blink">_</span>
+          </div>
           <h1 className="home-title">
             <span className="line-1">EL ARCADE</span>
             <span className="line-2">CLÁSICO ESTÁ</span>
             <span className="line-3">DE VUELTA</span>
           </h1>
           <p className="home-sub">
-            Juega los mejores clásicos directamente en tu navegador.<br />
+            Juega los mejores clásicos directamente en tu navegador.
+            <br />
             Sin descargas. Sin costo. Solo diversión.
           </p>
           <div className="home-ctas">
-            <Link href="/biblioteca" className="btn xl pulse">▶  EXPLORAR JUEGOS</Link>
-            <Link href="/acceso" className="btn xl magenta">✦  CREAR CUENTA</Link>
+            <Link href="/biblioteca" className="btn xl pulse">
+              ▶ EXPLORAR JUEGOS
+            </Link>
+            <Link href="/acceso" className="btn xl magenta">
+              ✦ CREAR CUENTA
+            </Link>
           </div>
           <div className="hero-scroll" aria-hidden="true">
             <span>DESLIZA</span>
@@ -43,7 +70,11 @@ export function HomePage() {
         </div>
         <div className="feature-grid">
           {FEATURES.map((f, i) => (
-            <div key={f.icon} className={"feature-card " + f.color} style={{ transitionDelay: i * 80 + "ms" }}>
+            <div
+              key={f.icon}
+              className={"feature-card " + f.color}
+              style={{ transitionDelay: i * 80 + "ms" }}
+            >
               <FeatureIcon kind={f.icon} />
               <div className="ft-title pixel">{f.title}</div>
               <div className="ft-desc">{f.desc}</div>
@@ -59,13 +90,13 @@ export function HomePage() {
           <h2 className="section-title">JUEGOS DISPONIBLES AHORA</h2>
           <div className="section-rule" />
         </div>
-        <div className="mini-rail">
-          {GAMES.slice(0, 6).map((g) => (
-            <MiniGameCard key={g.id} game={g} />
-          ))}
-        </div>
+        <Suspense fallback={<div className="mini-rail" aria-busy="true" />}>
+          <GamesRail />
+        </Suspense>
         <div style={{ textAlign: "center", marginTop: 24 }}>
-          <Link href="/biblioteca" className="btn lg">VER TODOS LOS JUEGOS →</Link>
+          <Link href="/biblioteca" className="btn lg">
+            VER TODOS LOS JUEGOS →
+          </Link>
         </div>
       </Reveal>
 
@@ -73,7 +104,11 @@ export function HomePage() {
       <Reveal className="home-stats">
         <div className="stats-inner">
           {HOME_STATS.map((st, i) => (
-            <div key={st.n} className="stat-block" style={{ transitionDelay: i * 90 + "ms" }}>
+            <div
+              key={st.n}
+              className="stat-block"
+              style={{ transitionDelay: i * 90 + "ms" }}
+            >
               <div className="stat-n neon-yellow">{st.n}</div>
               <div className="stat-u pixel">{st.unit}</div>
               <div className="stat-s">{st.sub}</div>
@@ -96,10 +131,16 @@ export function HomePage() {
             </div>
             <div className="ticker">
               {RECENT_SCORES.map((r, i) => (
-                <div key={r.player} className="tick-row" style={{ animationDelay: i * 60 + "ms" }}>
+                <div
+                  key={r.player}
+                  className="tick-row"
+                  style={{ animationDelay: i * 60 + "ms" }}
+                >
                   <span className={"tk-p neon-" + r.color}>{r.player}</span>
                   <span className="tk-mid">▸ {r.game}</span>
-                  <span className="tk-s">+{r.score.toLocaleString("es-ES")}</span>
+                  <span className="tk-s">
+                    +{r.score.toLocaleString("es-ES")}
+                  </span>
                   <span className="tk-t">{r.ago}</span>
                 </div>
               ))}
@@ -108,16 +149,32 @@ export function HomePage() {
 
           <div className="activity-card">
             <div className="ac-head">
-              <div className="ac-title pixel neon-magenta">▸ TOP JUGADORES · HOY</div>
-              <Link href="/salon" className="lb-link">VER SALÓN →</Link>
+              <div className="ac-title pixel neon-magenta">
+                ▸ TOP JUGADORES · HOY
+              </div>
+              <Link href="/salon" className="lb-link">
+                VER SALÓN →
+              </Link>
             </div>
             <div className="top-list">
               {TOP_PLAYERS.map((r, i) => (
-                <div key={r.rank} className={"top-row" + (i < 3 ? ` top${i + 1}` : "")}>
-                  <span className="tp-rk">#{String(r.rank).padStart(2, "0")}</span>
-                  <span className="tp-bar"><span className="tp-fill" style={{ width: 100 - i * 16 + "%" }} /></span>
+                <div
+                  key={r.rank}
+                  className={"top-row" + (i < 3 ? ` top${i + 1}` : "")}
+                >
+                  <span className="tp-rk">
+                    #{String(r.rank).padStart(2, "0")}
+                  </span>
+                  <span className="tp-bar">
+                    <span
+                      className="tp-fill"
+                      style={{ width: 100 - i * 16 + "%" }}
+                    />
+                  </span>
                   <span className="tp-p">{r.player}</span>
-                  <span className="tp-s">{r.score.toLocaleString("es-ES")}</span>
+                  <span className="tp-s">
+                    {r.score.toLocaleString("es-ES")}
+                  </span>
                 </div>
               ))}
             </div>
@@ -146,9 +203,19 @@ export function HomePage() {
                 <li key={perk}>✔ {perk}</li>
               ))}
             </ul>
-            <Link href="/acceso" className="btn xl pulse" style={{ width: "100%" }}>EMPEZAR GRATIS →</Link>
+            <Link
+              href="/acceso"
+              className="btn xl pulse"
+              style={{ width: "100%" }}
+            >
+              EMPEZAR GRATIS →
+            </Link>
             <div className="pc-foot">No pedimos tarjeta. Nunca lo haremos.</div>
-            <div className="pc-stamp pixel">FREE<br />PLAY</div>
+            <div className="pc-stamp pixel">
+              FREE
+              <br />
+              PLAY
+            </div>
           </div>
 
           <div className="pricing-faq">
@@ -165,8 +232,12 @@ export function HomePage() {
       {/* FINAL CTA */}
       <Reveal className="home-final">
         <h2 className="final-title pixel">¿LISTO PARA JUGAR?</h2>
-        <Link href="/biblioteca" className="btn xl pulse final-cta">INSERTAR MONEDA →</Link>
-        <div className="final-tag">Gratis. Sin registro obligatorio. Empieza en segundos.</div>
+        <Link href="/biblioteca" className="btn xl pulse final-cta">
+          INSERTAR MONEDA →
+        </Link>
+        <div className="final-tag">
+          Gratis. Sin registro obligatorio. Empieza en segundos.
+        </div>
       </Reveal>
     </div>
   );

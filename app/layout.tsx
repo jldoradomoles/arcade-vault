@@ -4,10 +4,10 @@ import {
   JetBrains_Mono,
   Press_Start_2P,
 } from "next/font/google";
+import { Suspense } from "react";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { SessionProvider } from "@/components/session-provider";
-import { SupabaseCheck } from "@/components/supabase-check";
 import "./globals.css";
 
 const pressStart = Press_Start_2P({
@@ -44,9 +44,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="av-bg" />
         <div className="av-noise" />
         <div className="av-root">
-          <SupabaseCheck />
           <SessionProvider>
-            <Nav />
+            {/* Nav lee usePathname(): en rutas con params dinámicos debe ir en Suspense */}
+            <Suspense fallback={<nav className="av-nav" aria-busy="true" />}>
+              <Nav />
+            </Suspense>
             <main className="av-main">{children}</main>
             <Footer />
           </SessionProvider>

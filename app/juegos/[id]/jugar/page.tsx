@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { GamePlayer } from "@/components/game-player";
-import { GAMES, getGame } from "@/lib/games";
-
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
-}
+import { getGame } from "@/lib/games";
 
 export default function JugarPage({ params }: PageProps<"/juegos/[id]/jugar">) {
   // `params` se lee dentro de Suspense para que el shell estático no dependa de la URL
@@ -16,9 +12,13 @@ export default function JugarPage({ params }: PageProps<"/juegos/[id]/jugar">) {
   );
 }
 
-async function Jugar({ params }: { params: PageProps<"/juegos/[id]/jugar">["params"] }) {
+async function Jugar({
+  params,
+}: {
+  params: PageProps<"/juegos/[id]/jugar">["params"];
+}) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
   return <GamePlayer game={{ id: game.id, title: game.title }} />;
