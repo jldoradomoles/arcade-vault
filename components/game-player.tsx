@@ -6,6 +6,13 @@ import { AsteroidsCanvas } from "@/components/asteroids-canvas";
 import { useSession } from "@/components/session-provider";
 import type { AsteroidsStats } from "@/lib/asteroids/engine";
 import type { Game } from "@/lib/games";
+import { submitScore } from "@/app/juegos/[id]/jugar/actions";
+
+const SAVE_ERRORS = {
+  "no-session": "Tu sesión ha caducado. Inicia sesión de nuevo para guardar.",
+  invalid: "Esta puntuación no se puede guardar.",
+  failed: "No se pudo guardar la puntuación. Inténtalo de nuevo.",
+} as const;
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 const LIVES = 3;
@@ -21,7 +28,7 @@ const ASTEROIDS_CONTROLS: { keys: string[]; action: string }[] = [
 // Asteroids es un juego real (motor en lib/asteroids): puntos, vidas y nivel vienen del motor.
 // Los demás juegos siguen con un reproductor simulado: el puntaje sube solo.
 export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
-  const { user, saveScore } = useSession();
+  const { user } = useSession();
   const isAsteroids = game.id === "asteroids";
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(LIVES);
@@ -29,11 +36,14 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const [runKey, setRunKey] = useState(0);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const name = nameOverride ?? user?.name ?? "INVITADO";
-  const level = isAsteroids ? engineLevel : 1 + Math.floor(score / POINTS_PER_LEVEL);
+  const name = user?.name.toUpperCase() ?? "INVITADO";
+  const level = isAsteroids
+    ? engineLevel
+    : 1 + Math.floor(score / POINTS_PER_LEVEL);
 
   const onStats = (stats: AsteroidsStats) => {
     setScore(stats.score);
@@ -48,7 +58,10 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
 
   useEffect(() => {
     if (isAsteroids || over || paused) return;
-    const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
+    const t = setInterval(
+      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      220,
+    );
     return () => clearInterval(t);
   }, [isAsteroids, over, paused]);
 
@@ -60,11 +73,21 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setSaveError(null);
   };
 
-  const save = () => {
-    saveScore({ game: game.id, score, name });
-    setSaved(true);
+  const save = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const result = await submitScore({ gameId: game.id, score });
+      if (result.ok) setSaved(true);
+      else setSaveError(SAVE_ERRORS[result.error]);
+    } catch {
+      setSaveError(SAVE_ERRORS.failed);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -89,11 +112,23 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
           </div>
         </div>
         <div className="hud-actions">
-          <button type="button" className="btn yellow" onClick={() => setPaused((p) => !p)}>
+          <button
+            type="button"
+            className="btn yellow"
+            onClick={() => setPaused((p) => !p)}
+          >
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          <button type="button" className="btn magenta" onClick={() => setOver(true)}>FIN</button>
-          <Link href={`/juegos/${game.id}`} className="btn ghost">SALIR</Link>
+          <button
+            type="button"
+            className="btn magenta"
+            onClick={() => setOver(true)}
+          >
+            FIN
+          </button>
+          <Link href={`/juegos/${game.id}`} className="btn ghost">
+            SALIR
+          </Link>
         </div>
       </div>
 
@@ -159,28 +194,50 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
 
       {over && (
         <div className="modal-bd">
-          <div className="modal" role="dialog" aria-modal="true" aria-label="Fin del juego">
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Fin del juego"
+          >
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{fmt(score)}</div>
-            {!saved ? (
+            {saved ? (
+              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+            ) : user ? (
               <div className="input-row">
-                <input
-                  value={name}
-                  onChange={(e) => setNameOverride(e.target.value.toUpperCase().slice(0, 10))}
-                  placeholder="TUS INICIALES"
-                  aria-label="Tus iniciales"
-                />
-                <button type="button" className="btn yellow" onClick={save}>
-                  GUARDAR PUNTUACIÓN
+                <div className="save-as" aria-label="Se guardará a nombre de">
+                  {name}
+                </div>
+                <button
+                  type="button"
+                  className="btn yellow"
+                  onClick={save}
+                  disabled={saving}
+                >
+                  {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
                 </button>
               </div>
             ) : (
-              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+              <div className="input-row">
+                <Link href="/acceso" className="btn yellow w-full">
+                  INICIA SESIÓN PARA GUARDAR
+                </Link>
+              </div>
+            )}
+            {saveError && (
+              <div className="auth-error" role="alert">
+                {saveError}
+              </div>
             )}
             <div className="actions">
-              <button type="button" className="btn" onClick={restart}>JUGAR DE NUEVO</button>
-              <Link href="/biblioteca" className="btn magenta">VOLVER AL VAULT</Link>
+              <button type="button" className="btn" onClick={restart}>
+                JUGAR DE NUEVO
+              </button>
+              <Link href="/biblioteca" className="btn magenta">
+                VOLVER AL VAULT
+              </Link>
             </div>
           </div>
         </div>
