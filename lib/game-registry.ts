@@ -21,7 +21,8 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
   asteroids: {
     width: W,
     height: H,
-    createEngine: (canvas, callbacks) => new AsteroidsEngine(canvas, callbacks),
+    createEngine: (canvas, callbacks, options) =>
+      new AsteroidsEngine(canvas, callbacks, options),
     controls: [
       { keys: ["←", "→"], action: "Girar" },
       { keys: ["↑"], action: "Propulsar" },
@@ -43,7 +44,8 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
   arkanoid: {
     width: ARKANOID_W,
     height: ARKANOID_H,
-    createEngine: (canvas, callbacks) => new ArkanoidEngine(canvas, callbacks),
+    createEngine: (canvas, callbacks, options) =>
+      new ArkanoidEngine(canvas, callbacks, options),
     controls: [
       { keys: ["←", "→"], action: "Mover" },
       { keys: ["Espacio"], action: "Lanzar" },
@@ -53,7 +55,8 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
   snake: {
     width: SNAKE_W,
     height: SNAKE_H,
-    createEngine: (canvas, callbacks) => new SnakeEngine(canvas, callbacks),
+    createEngine: (canvas, callbacks, options) =>
+      new SnakeEngine(canvas, callbacks, options),
     controls: [
       { keys: ["←", "↑", "→", "↓"], action: "Mover" },
       { keys: ["A", "W", "D", "S"], action: "Mover" },

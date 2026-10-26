@@ -28,13 +28,12 @@ export const TRIPLE_DURATION = 8; // segundos de efecto
 export const SHIELD_DURATION = 8; // segundos de efecto (o hasta recibir un golpe)
 export const SHIELD_PAD = 9; // holgura del escudo respecto al radio de la nave
 export const SHIELD_GRACE = 0.5; // segundos sin colisión con la nave tras absorber un golpe
-export const POWERUP_TYPES: Record<
-  PowerUpType,
-  { color: string; label: string }
-> = {
-  triple: { color: "#0ff", label: "3" },
-  shield: { color: "#4f4", label: "E" },
-  bomb: { color: "#f80", label: "B" },
+// Etiqueta corta mostrada dentro del círculo de cada power-up.
+// Los colores se eligen por skin (ver lib/asteroids/skins.ts).
+export const POWERUP_LABELS: Record<PowerUpType, string> = {
+  triple: "3",
+  shield: "E",
+  bomb: "B",
 };
 export const BOMB_CHANCE = 0.3; // probabilidad por ronda de que aparezca la Bomba Nova
 export const BOMB_FLASH = 0.5; // segundos del destello al detonar

@@ -18,12 +18,6 @@ export const MAX_DT_MS = 50;
 export const MAX_QUEUED_TURNS = 2;
 export const MAX_SCORE = 10_000_000; // límite de submitScore (SPEC 06)
 
-export const BG = "#11111f";
-export const GRID_LINE = "rgba(0, 245, 255, 0.07)";
-export const HEAD_COLOR = "#00f5ff";
-export const BODY_COLOR = "#00ff88";
-export const FRUIT_FALLBACK_COLOR = "#ff006e";
-
 export const FRUITS_SRC = "/games/snake/fruits.png";
 
 // Recortes de la fila central de fruits.png (hoja de 3790×442, fondo transparente)

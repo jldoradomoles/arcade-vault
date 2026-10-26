@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { GameCanvas } from "@/components/game-canvas";
+import { GameSkinPicker } from "@/components/game-skin-picker";
 import { useSession } from "@/components/session-provider";
 import type { GameStats } from "@/lib/game-engine";
 import { GAME_REGISTRY } from "@/lib/game-registry";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import type { Game } from "@/lib/games";
 import { submitScore } from "@/app/juegos/[id]/jugar/actions";
 
@@ -28,6 +30,7 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const [lives, setLives] = useState<number | undefined>(LIVES);
   const [engineLevel, setEngineLevel] = useState<number | undefined>(1);
   const [runKey, setRunKey] = useState(0);
+  const [skin, setSkin] = useState<SkinId>(DEFAULT_SKIN);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -108,6 +111,7 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
           )}
         </div>
         <div className="hud-actions">
+          {entry && <GameSkinPicker current={skin} onChange={setSkin} />}
           <button
             type="button"
             className="btn yellow"
@@ -147,12 +151,13 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
         >
           {entry ? (
             <GameCanvas
-              key={runKey}
+              key={`${runKey}-${skin}`}
               createEngine={entry.createEngine}
               width={entry.width}
               height={entry.height}
               paused={paused}
               over={over}
+              skin={skin}
               onStats={onStats}
               onGameOver={onGameOver}
             />

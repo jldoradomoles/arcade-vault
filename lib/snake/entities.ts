@@ -74,6 +74,7 @@ export function drawFruitSprite(
   sprite: number,
   cell: Cell,
   fallbackColor: string,
+  spriteFilter: string = "none",
 ): void {
   const px = cell.x * CELL;
   const py = cell.y * CELL;
@@ -94,6 +95,9 @@ export function drawFruitSprite(
   const scale = Math.min((CELL - FRUIT_MARGIN) / w, (CELL - FRUIT_MARGIN) / h);
   const dw = w * scale;
   const dh = h * scale;
+  ctx.save();
+  // El teñido se aplica por canvas (ctx.filter) sin tocar el PNG original
+  ctx.filter = spriteFilter;
   ctx.drawImage(
     img,
     x,
@@ -105,4 +109,5 @@ export function drawFruitSprite(
     dw,
     dh,
   );
+  ctx.restore();
 }
