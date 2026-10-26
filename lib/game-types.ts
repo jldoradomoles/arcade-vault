@@ -16,3 +16,19 @@ export interface Game {
 }
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;
+
+// ===== Skins =====
+// Identificadores de skin disponibles para cualquier juego. Cada motor resuelve
+// su propia paleta a partir de aquí; la plataforma solo propaga el id.
+export type SkinId = "classic" | "neon" | "retro";
+export const SKIN_IDS: readonly SkinId[] = [
+  "classic",
+  "neon",
+  "retro",
+] as const;
+export const DEFAULT_SKIN: SkinId = "classic";
+export const SKIN_LABELS: Record<SkinId, string> = {
+  classic: "Clásico",
+  neon: "Neón",
+  retro: "Retro",
+};

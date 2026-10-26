@@ -1,5 +1,7 @@
 // Contrato que cumple todo motor de juego de la plataforma (SPEC 07).
 // Sin React ni next/*: solo DOM y canvas.
+import type { SkinId } from "@/lib/game-types";
+
 export interface GameStats {
   score: number;
   lives?: number; // si no se emite, el HUD oculta VIDAS
@@ -21,4 +23,5 @@ export interface GameEngine {
 export type CreateEngine = (
   canvas: HTMLCanvasElement,
   callbacks: GameCallbacks,
+  options?: { skin?: SkinId },
 ) => GameEngine;

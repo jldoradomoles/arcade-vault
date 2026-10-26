@@ -41,7 +41,6 @@ export const LAUNCH_SPREAD = (15 * Math.PI) / 180; // desviación máxima respec
 export const MAX_BOUNCE_ANGLE = (60 * Math.PI) / 180; // en los bordes de la paleta
 export const EXPLOSION_DURATION = 150; // ms
 export const MAX_SCORE = 10_000_000; // límite de submitScore (SPEC 06)
-export const BG = "#11111f";
 
 export const ASSETS = {
   sprites: "/games/arkanoid/spritesheet-breakout.png",

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { CreateEngine, GameEngine, GameStats } from "@/lib/game-engine";
+import type { SkinId } from "@/lib/game-types";
 
 interface GameCanvasProps {
   createEngine: CreateEngine;
@@ -9,6 +10,7 @@ interface GameCanvasProps {
   height: number;
   paused: boolean;
   over: boolean; // true => el motor llama a finish()
+  skin?: SkinId;
   onStats: (stats: GameStats) => void;
   onGameOver: (finalScore: number) => void;
 }
@@ -19,6 +21,7 @@ export function GameCanvas({
   height,
   paused,
   over,
+  skin,
   onStats,
   onGameOver,
 }: GameCanvasProps) {
@@ -34,18 +37,23 @@ export function GameCanvas({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const engine = createEngine(canvas, {
-      onStats: (s) => callbacksRef.current.onStats(s),
-      onGameOver: (score) => callbacksRef.current.onGameOver(score),
-    });
+    const engine = createEngine(
+      canvas,
+      {
+        onStats: (s) => callbacksRef.current.onStats(s),
+        onGameOver: (score) => callbacksRef.current.onGameOver(score),
+      },
+      { skin },
+    );
     engineRef.current = engine;
     engine.start();
     return () => {
       engine.destroy();
       engineRef.current = null;
     };
-    // createEngine viene del registro (referencia estable por juego)
-  }, [createEngine]);
+    // createEngine viene del registro (referencia estable por juego).
+    // Al cambiar la skin se remonta el motor para aplicar la paleta.
+  }, [createEngine, skin]);
 
   useEffect(() => {
     engineRef.current?.setPaused(paused);

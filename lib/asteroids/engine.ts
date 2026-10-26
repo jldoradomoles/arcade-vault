@@ -1,10 +1,10 @@
 import type { GameEngine, GameStats } from "@/lib/game-engine";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import {
   BOMB_CHANCE,
   BOMB_FLASH,
   H,
   POINTS,
-  POWERUP_TYPES,
   SHIELD_DURATION,
   SHIELD_GRACE,
   SHIELD_PAD,
@@ -24,6 +24,7 @@ import {
   Ship,
   type Keys,
 } from "./entities";
+import { SKINS, type AsteroidsPalette } from "./skins";
 
 // Asteroids siempre emite las tres cifras; el paso 3 de SPEC 07 migra a GameStats.
 export type AsteroidsStats = Required<GameStats>;
@@ -37,6 +38,7 @@ const GAME_KEYS = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
 export class AsteroidsEngine implements GameEngine {
   private ctx: CanvasRenderingContext2D;
+  private palette: AsteroidsPalette;
 
   private ship = new Ship();
   private bullets: Bullet[] = [];
@@ -76,10 +78,12 @@ export class AsteroidsEngine implements GameEngine {
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: AsteroidsCallbacks,
+    options?: { skin?: SkinId },
   ) {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D no disponible");
     this.ctx = ctx;
+    this.palette = SKINS[options?.skin ?? DEFAULT_SKIN];
   }
 
   // ── Ciclo de vida ───────────────────────────────────────────────────────────
@@ -384,19 +388,19 @@ export class AsteroidsEngine implements GameEngine {
 
   // ── Draw ────────────────────────────────────────────────────────────────────
   private draw() {
-    const { ctx } = this;
-    ctx.fillStyle = "#000";
+    const { ctx, palette } = this;
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
 
-    this.particles.forEach((p) => p.draw(ctx));
-    this.asteroids.forEach((a) => a.draw(ctx));
-    this.bullets.forEach((b) => b.draw(ctx));
-    this.powerUps.forEach((p) => p.draw(ctx));
-    this.ship.draw(ctx);
+    this.particles.forEach((p) => p.draw(ctx, palette));
+    this.asteroids.forEach((a) => a.draw(ctx, palette));
+    this.bullets.forEach((b) => b.draw(ctx, palette));
+    this.powerUps.forEach((p) => p.draw(ctx, palette));
+    this.ship.draw(ctx, palette);
     this.drawShield();
 
     if (this.bombFlash > 0) {
-      ctx.fillStyle = `rgba(255,255,255,${((this.bombFlash / BOMB_FLASH) * 0.8).toFixed(2)})`;
+      ctx.fillStyle = `rgba(${palette.bombFlashRgb},${((this.bombFlash / BOMB_FLASH) * 0.8).toFixed(2)})`;
       ctx.fillRect(0, 0, W, H);
     }
 
@@ -404,13 +408,13 @@ export class AsteroidsEngine implements GameEngine {
   }
 
   private drawShield() {
-    const { ctx, ship, shieldTimer } = this;
+    const { ctx, ship, shieldTimer, palette } = this;
     if (shieldTimer <= 0 || ship.dead) return;
     // Parpadeo durante el último segundo
     if (shieldTimer < 1 && Math.floor(shieldTimer * 10) % 2 === 0) return;
     ctx.save();
-    ctx.strokeStyle = POWERUP_TYPES.shield.color;
-    ctx.fillStyle = "rgba(68,255,68,0.12)";
+    ctx.strokeStyle = palette.powerUpColors.shield;
+    ctx.fillStyle = palette.shieldFill;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(ship.x, ship.y, ship.radius + SHIELD_PAD, 0, Math.PI * 2);
@@ -421,22 +425,22 @@ export class AsteroidsEngine implements GameEngine {
 
   // Puntos, vidas y nivel los pinta el HUD de la plataforma; aquí solo los power-ups activos
   private drawPowerUpIndicators() {
-    const { ctx } = this;
+    const { ctx, palette } = this;
     ctx.font = "15px monospace";
     ctx.textAlign = "left";
     let hudY = 26;
     if (this.tripleShotTimer > 0) {
-      ctx.fillStyle = POWERUP_TYPES.triple.color;
+      ctx.fillStyle = palette.powerUpColors.triple;
       ctx.fillText(`TRIPLE ${Math.ceil(this.tripleShotTimer)}s`, 14, hudY);
       hudY += 20;
     }
     if (this.shieldTimer > 0) {
-      ctx.fillStyle = POWERUP_TYPES.shield.color;
+      ctx.fillStyle = palette.powerUpColors.shield;
       ctx.fillText(`ESCUDO ${Math.ceil(this.shieldTimer)}s`, 14, hudY);
       hudY += 20;
     }
     if (this.hasBomb) {
-      ctx.fillStyle = POWERUP_TYPES.bomb.color;
+      ctx.fillStyle = palette.powerUpColors.bomb;
       ctx.fillText("BOMBA NOVA [B]", 14, hudY);
     }
   }

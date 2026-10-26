@@ -1,8 +1,8 @@
 import type { GameCallbacks, GameEngine, GameStats } from "@/lib/game-engine";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import {
   ASSETS,
   BALL_SIZE,
-  BG,
   BLOCK_H,
   BLOCK_W,
   DAMAGED_ALPHA,
@@ -34,11 +34,13 @@ import {
   type Ball,
   type Paddle,
 } from "./entities";
+import { SKINS, type ArkanoidPalette } from "./skins";
 
 const GAME_KEYS = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space"];
 
 export class ArkanoidEngine implements GameEngine {
   private ctx: CanvasRenderingContext2D;
+  private palette: ArkanoidPalette;
   private sprites: HTMLImageElement | null = null;
   private spritesLoaded = false;
   private sounds: Partial<Record<"bounce" | "break", HTMLAudioElement>> = {};
@@ -80,10 +82,12 @@ export class ArkanoidEngine implements GameEngine {
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: GameCallbacks,
+    options?: { skin?: SkinId },
   ) {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D no disponible");
     this.ctx = ctx;
+    this.palette = SKINS[options?.skin ?? DEFAULT_SKIN];
     canvas.width = W;
     canvas.height = H;
     ctx.imageSmoothingEnabled = false;
@@ -401,9 +405,12 @@ export class ArkanoidEngine implements GameEngine {
   }
 
   private draw() {
-    const { ctx, paddle, ball } = this;
-    ctx.fillStyle = BG;
+    const { ctx, paddle, ball, palette } = this;
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
+    // Teñimos el spritesheet entero vía ctx.filter mientras pintamos los sprites
+    ctx.save();
+    ctx.filter = palette.spriteFilter;
     for (const b of this.blocks) {
       if (!b.alive) continue;
       // el bloque gris dañado se dibuja con menos opacidad
@@ -423,9 +430,10 @@ export class ArkanoidEngine implements GameEngine {
     }
     this.drawFrame(SPRITES.paddle, paddle.x, paddle.y, paddle.w, paddle.h);
     this.drawFrame(SPRITES.ball, ball.x, ball.y, ball.size, ball.size);
+    ctx.restore();
     // rótulo «Nivel N» sin oscurecer el canvas, mientras la bola está pegada
     if (this.phase === "ready") {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = palette.levelText;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.font = "bold 48px monospace";

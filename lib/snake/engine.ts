@@ -1,17 +1,13 @@
 import type { GameCallbacks, GameEngine, GameStats } from "@/lib/game-engine";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import {
-  BG,
-  BODY_COLOR,
   CELL,
   COLS,
   FRUITS_PER_LEVEL,
   FRUITS_SRC,
-  FRUIT_FALLBACK_COLOR,
   FRUIT_POINTS,
   FRUIT_SPRITES,
-  GRID_LINE,
   H,
-  HEAD_COLOR,
   MAX_DT_MS,
   MAX_QUEUED_TURNS,
   MAX_SCORE,
@@ -23,6 +19,7 @@ import {
   type Fruit,
   type Phase,
 } from "./constants";
+import { SKINS, type SnakePalette } from "./skins";
 import {
   drawFruitSprite,
   hitsBody,
@@ -48,6 +45,7 @@ const SEGMENT_INSET = 2; // px entre cada segmento y el borde de su celda
 
 export class SnakeEngine implements GameEngine {
   private ctx: CanvasRenderingContext2D;
+  private palette: SnakePalette;
   private fruitImg: HTMLImageElement | null = null; // null hasta que carga
 
   private phase: Phase = "ready";
@@ -72,10 +70,12 @@ export class SnakeEngine implements GameEngine {
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: GameCallbacks,
+    options?: { skin?: SkinId },
   ) {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D no disponible");
     this.ctx = ctx;
+    this.palette = SKINS[options?.skin ?? DEFAULT_SKIN];
     canvas.width = W;
     canvas.height = H;
     ctx.imageSmoothingEnabled = true;
@@ -250,8 +250,8 @@ export class SnakeEngine implements GameEngine {
 
   // ── Dibujo ──────────────────────────────────────────────────────────────────
   private draw() {
-    const { ctx } = this;
-    ctx.fillStyle = BG;
+    const { ctx, palette } = this;
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
     this.drawGrid();
     this.drawFruit();
@@ -260,8 +260,8 @@ export class SnakeEngine implements GameEngine {
   }
 
   private drawGrid() {
-    const { ctx } = this;
-    ctx.strokeStyle = GRID_LINE;
+    const { ctx, palette } = this;
+    ctx.strokeStyle = palette.gridLine;
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 1; x < COLS; x++) {
@@ -277,13 +277,13 @@ export class SnakeEngine implements GameEngine {
 
   // Rótulo de espera, sin oscurecer el tablero
   private drawReadyLabel() {
-    const { ctx } = this;
+    const { ctx, palette } = this;
     ctx.save();
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "bold 36px monospace";
     ctx.fillStyle = "#ffffff";
-    ctx.shadowColor = BG;
+    ctx.shadowColor = palette.bg;
     ctx.shadowBlur = 8;
     ctx.fillText("PULSA UNA FLECHA", W / 2, H - 120);
     ctx.restore();
@@ -296,18 +296,19 @@ export class SnakeEngine implements GameEngine {
       this.fruitImg,
       this.fruit.sprite,
       this.fruit,
-      FRUIT_FALLBACK_COLOR,
+      this.palette.fruitFallback,
+      this.palette.spriteFilter,
     );
   }
 
   // Del último segmento a la cabeza, para que la cabeza quede encima
   private drawSnake() {
-    const { ctx, snake } = this;
+    const { ctx, snake, palette } = this;
     const size = CELL - SEGMENT_INSET * 2;
     for (let i = snake.length - 1; i >= 0; i--) {
       const { x, y } = snake[i];
       const head = i === 0;
-      ctx.fillStyle = head ? HEAD_COLOR : BODY_COLOR;
+      ctx.fillStyle = head ? palette.head : palette.body;
       ctx.shadowColor = ctx.fillStyle;
       ctx.shadowBlur = head ? 12 : 6;
       ctx.fillRect(
