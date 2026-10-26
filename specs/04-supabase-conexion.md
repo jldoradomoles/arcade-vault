@@ -1,6 +1,6 @@
 # SPEC 04 — Conexión de la aplicación con Supabase
 
-> **Status:** aprobado
+> **Status:** implementado
 > **Depends on:** SPEC 03
 > **Date:** 2026-10-22
 > **Objective:** Instalar el cliente de Supabase y configurar la conexión de la app Next.js con el proyecto `xxfgpzljuglpfyqshcps`, sin crear tablas, modelos ni cambiar ninguna pantalla.

@@ -1,6 +1,6 @@
 # SPEC 06 — Leaderboard real, tabla de juegos y autenticación con Supabase
 
-> **Status:** aprobado
+> **Status:** implmentado
 > **Depends on:** SPEC 01, SPEC 04, SPEC 05
 > **Date:** 2026-10-23
 > **Objective:** Crear en Supabase las tablas `games`, `profiles` y `scores`, con Supabase Auth (email + contraseña), para que el Salón de la Fama, las fichas de juego y el guardado de puntuaciones al terminar una partida usen datos reales.

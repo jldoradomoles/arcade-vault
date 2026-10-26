@@ -1,6 +1,6 @@
 # SPEC 07 — Juego Tetris dentro de la plataforma
 
-> **Status:** aprobado
+> **Status:** implementado
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-10-25
 > **Objective:** Portar Tetris de `references/started-games/03-tetris` a un motor TypeScript jugable en `/juegos/tetris/jugar`, con el HUD, la pausa y el guardado de puntuación de la plataforma y su ficha en el leaderboard.

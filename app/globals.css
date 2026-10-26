@@ -761,6 +761,22 @@ a {
   background: url("/covers/tetris.svg") center / cover no-repeat;
 }
 
+/* ARKANOID: muro de bloques con los colores del spritesheet y la bola a punto de golpear */
+.cover-arkanoid {
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    #1d1d38 0,
+    #11111f 70%,
+    #05050a
+  );
+}
+.cover-arkanoid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/arkanoid.svg") center / cover no-repeat;
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

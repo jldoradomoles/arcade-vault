@@ -1,5 +1,7 @@
 // Registro de juegos con motor real. Apto para Client Components (sin next/headers).
 // Un juego sin entrada aquí conserva el reproductor simulado.
+import { H as ARKANOID_H, W as ARKANOID_W } from "@/lib/arkanoid/constants";
+import { ArkanoidEngine } from "@/lib/arkanoid/engine";
 import { H, W } from "@/lib/asteroids/constants";
 import { AsteroidsEngine } from "@/lib/asteroids/engine";
 import type { CreateEngine } from "@/lib/game-engine";
@@ -34,6 +36,16 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["↑", "X"], action: "Rotar" },
       { keys: ["↓"], action: "Bajar" },
       { keys: ["Espacio"], action: "Caída" },
+    ],
+  },
+  arkanoid: {
+    width: ARKANOID_W,
+    height: ARKANOID_H,
+    createEngine: (canvas, callbacks) => new ArkanoidEngine(canvas, callbacks),
+    controls: [
+      { keys: ["←", "→"], action: "Mover" },
+      { keys: ["Espacio"], action: "Lanzar" },
+      { keys: ["Ratón"], action: "Mover y lanzar (clic)" },
     ],
   },
 };
