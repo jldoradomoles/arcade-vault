@@ -23,6 +23,10 @@ Responde siempre en español.
 - `/frontend-design`: úsalo siempre que diseñes una interfaz de usuario.
 - `/nuevo-juego` (en `.claude/skills/nuevo-juego/`): genera la spec de un juego nuevo (motor + leaderboard + HUD de plataforma) a partir de una carpeta de `references/started-games/` o de una descripción. **Solo escribe la spec**; la implementación la hace después `/spec-impl`.
 
+## Subagentes del proyecto
+
+- `game-planner` (en `.claude/agents/game-planner.md`): decide qué juego encaja a continuación en la plataforma. Analiza el catálogo actual, los huecos de categoría/color y las carpetas de `references/started-games/`, y mantiene un backlog persistente en `references/game-suggestions-todo.md` con cuatro tablas (Sugeridos, Aceptados, Implementados, Descartados). **No escribe código ni specs**: su salida es la actualización del backlog y una recomendación razonada. El siguiente paso tras aceptar un candidato es `/nuevo-juego`.
+
 No hay framework de tests configurado.
 
 ## Hooks
