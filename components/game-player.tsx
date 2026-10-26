@@ -35,9 +35,7 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const name = user?.name.toUpperCase() ?? "INVITADO";
-  const level = entry
-    ? engineLevel
-    : 1 + Math.floor(score / POINTS_PER_LEVEL);
+  const level = entry ? engineLevel : 1 + Math.floor(score / POINTS_PER_LEVEL);
 
   const onStats = (stats: GameStats) => {
     setScore(stats.score);
@@ -191,7 +189,7 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
           className="mono mt-6 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] text-ink-dim"
         >
           {entry.controls.map(({ keys, action }) => (
-            <li key={action} className="flex items-center gap-2">
+            <li key={keys.join("+")} className="flex items-center gap-2">
               <span className="flex gap-1">
                 {keys.map((k) => (
                   <kbd
@@ -251,6 +249,9 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
               <button type="button" className="btn" onClick={restart}>
                 JUGAR DE NUEVO
               </button>
+              <Link href={`/juegos/${game.id}`} className="btn yellow">
+                VER MEJORES PUNTUACIONES
+              </Link>
               <Link href="/biblioteca" className="btn magenta">
                 VOLVER AL VAULT
               </Link>

@@ -1,0 +1,25 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - navigation [ref=f6e3]:
+      - link "ARCADE VAULT" [ref=f6e4] [cursor=pointer]:
+        - /url: /
+      - link "Iniciar Sesión" [ref=f6e7] [cursor=pointer]:
+        - /url: /acceso
+      - button "Menú" [ref=f6e8] [cursor=pointer]: ≡
+    - complementary [ref=f6e9]:
+      - generic [ref=f6e10]: MENÚ
+      - link "Inicio" [ref=f6e11] [cursor=pointer]:
+        - /url: /
+      - link "Biblioteca" [ref=f6e12] [cursor=pointer]:
+        - /url: /biblioteca
+      - link "Salón de la Fama" [ref=f6e13] [cursor=pointer]:
+        - /url: /salon
+      - link "Acerca de" [ref=f6e14] [cursor=pointer]:
+        - /url: /acerca-de
+      - link "Iniciar Sesión" [ref=f6e15] [cursor=pointer]:
+        - /url: /acceso
+      - generic [ref=f6e17]: CRÉDITOS · 03
+    - main [ref=f6e18]
+    - contentinfo [ref=f6e20]: © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+  - button "Open Next.js Dev Tools" [ref=f6e26] [cursor=pointer]
+  - alert [ref=f6e30]

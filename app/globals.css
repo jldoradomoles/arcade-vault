@@ -777,6 +777,22 @@ a {
   background: url("/covers/arkanoid.svg") center / cover no-repeat;
 }
 
+/* SNAKE: tablero en cuadrícula con la serpiente y la fruta a un paso de la cabeza */
+.cover-snake {
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    #14202a 0,
+    #11111f 70%,
+    #05050a
+  );
+}
+.cover-snake::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/snake.svg") center / cover no-repeat;
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;
