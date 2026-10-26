@@ -5,6 +5,8 @@ import { ArkanoidEngine } from "@/lib/arkanoid/engine";
 import { H, W } from "@/lib/asteroids/constants";
 import { AsteroidsEngine } from "@/lib/asteroids/engine";
 import type { CreateEngine } from "@/lib/game-engine";
+import { H as SNAKE_H, W as SNAKE_W } from "@/lib/snake/constants";
+import { SnakeEngine } from "@/lib/snake/engine";
 import { H as TETRIS_H, W as TETRIS_W } from "@/lib/tetris/constants";
 import { TetrisEngine } from "@/lib/tetris/engine";
 
@@ -46,6 +48,15 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["←", "→"], action: "Mover" },
       { keys: ["Espacio"], action: "Lanzar" },
       { keys: ["Ratón"], action: "Mover y lanzar (clic)" },
+    ],
+  },
+  snake: {
+    width: SNAKE_W,
+    height: SNAKE_H,
+    createEngine: (canvas, callbacks) => new SnakeEngine(canvas, callbacks),
+    controls: [
+      { keys: ["←", "↑", "→", "↓"], action: "Mover" },
+      { keys: ["A", "W", "D", "S"], action: "Mover" },
     ],
   },
 };

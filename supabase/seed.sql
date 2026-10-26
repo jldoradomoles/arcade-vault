@@ -11,7 +11,10 @@ insert into public.games (id, title, short, long, category, cover, color, sort_o
    'PUZZLE', 'cover-tetris', 'magenta', 10),
   ('arkanoid', 'ARKANOID', 'Rompe todos los bloques con la bola sin dejarla caer.',
    'Mueve la paleta para devolver la bola y derribar los muros de bloques de colores. El rebote cambia según dónde golpees la paleta. Hay tres niveles cada vez más rápidos y, desde el segundo, bloques grises que aguantan dos golpes. Tienes tres vidas y ganas si vacías el último nivel.',
-   'ARCADE', 'cover-arkanoid', 'yellow', 11)
+   'ARCADE', 'cover-arkanoid', 'yellow', 11),
+  ('snake', 'SNAKE', 'Come fruta, crece y no choques contigo ni con el muro.',
+   'Guía a la serpiente por un tablero cerrado y cómete las frutas que aparecen. Cada una te da 10 puntos y alarga tu cuerpo; cada cinco frutas sube el nivel y la serpiente se mueve más rápido. Si tocas un muro o tu propia cola, se acaba la partida.',
+   'ARCADE', 'cover-snake', 'green', 12)
 on conflict (id) do nothing;
 
 -- 2. Usuario de prueba con cuenta real: test@arcadevault.gg / PLAYERTEST ---------
@@ -61,7 +64,10 @@ from (values
   ('tetris',  4300, 12),
   ('arkanoid', 3200, 1),
   ('arkanoid', 1900, 5),
-  ('arkanoid',  800, 11)
+  ('arkanoid',  800, 11),
+  ('snake', 280, 2),
+  ('snake', 150, 7),
+  ('snake',  60, 13)
 ) as t(game_id, score, days)
 where exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-000000000001')
 on conflict (id) do nothing;
