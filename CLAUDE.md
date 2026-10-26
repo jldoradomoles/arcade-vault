@@ -26,6 +26,7 @@ Responde siempre en español.
 ## Subagentes del proyecto
 
 - `game-planner` (en `.claude/agents/game-planner.md`): decide qué juego encaja a continuación en la plataforma. Analiza el catálogo actual, los huecos de categoría/color y las carpetas de `references/started-games/`, y mantiene un backlog persistente en `references/game-suggestions-todo.md` con cuatro tablas (Sugeridos, Aceptados, Implementados, Descartados). **No escribe código ni specs**: su salida es la actualización del backlog y una recomendación razonada. El siguiente paso tras aceptar un candidato es `/nuevo-juego`.
+- `game-jam` (en `.claude/agents/game-jam.md`): genera 3 specs de juegos a partir de un tema, cada una con dos variantes de implementación (`spec-v1.md` y `spec-v2.md`) para que el usuario elija. Cada juego queda en `specs/game-jam/<game-id>/`. Es autónomo: no hace preguntas, solo necesita el tema. Las specs salen en estado `borrador`; para implementar un juego elegido, mover su spec a `specs/NN-juego-<id>.md` y usar `/spec-impl`.
 
 No hay framework de tests configurado.
 
