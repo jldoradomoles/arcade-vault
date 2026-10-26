@@ -1,0 +1,39 @@
+// Registro de juegos con motor real. Apto para Client Components (sin next/headers).
+// Un juego sin entrada aquí conserva el reproductor simulado.
+import { H, W } from "@/lib/asteroids/constants";
+import { AsteroidsEngine } from "@/lib/asteroids/engine";
+import type { CreateEngine } from "@/lib/game-engine";
+import { H as TETRIS_H, W as TETRIS_W } from "@/lib/tetris/constants";
+import { TetrisEngine } from "@/lib/tetris/engine";
+
+export interface GameEntry {
+  width: number;
+  height: number;
+  createEngine: CreateEngine;
+  controls: { keys: string[]; action: string }[]; // línea de ayuda bajo el CRT
+}
+
+export const GAME_REGISTRY: Record<string, GameEntry> = {
+  asteroids: {
+    width: W,
+    height: H,
+    createEngine: (canvas, callbacks) => new AsteroidsEngine(canvas, callbacks),
+    controls: [
+      { keys: ["←", "→"], action: "Girar" },
+      { keys: ["↑"], action: "Propulsar" },
+      { keys: ["Espacio"], action: "Disparar" },
+      { keys: ["B"], action: "Bomba Nova, si la tienes" },
+    ],
+  },
+  tetris: {
+    width: TETRIS_W,
+    height: TETRIS_H,
+    createEngine: (canvas, callbacks) => new TetrisEngine(canvas, callbacks),
+    controls: [
+      { keys: ["←", "→"], action: "Mover" },
+      { keys: ["↑", "X"], action: "Rotar" },
+      { keys: ["↓"], action: "Bajar" },
+      { keys: ["Espacio"], action: "Caída" },
+    ],
+  },
+};

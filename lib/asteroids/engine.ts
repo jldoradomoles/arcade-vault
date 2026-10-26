@@ -1,3 +1,4 @@
+import type { GameEngine, GameStats } from "@/lib/game-engine";
 import {
   BOMB_CHANCE,
   BOMB_FLASH,
@@ -24,11 +25,8 @@ import {
   type Keys,
 } from "./entities";
 
-export interface AsteroidsStats {
-  score: number;
-  lives: number;
-  level: number;
-}
+// Asteroids siempre emite las tres cifras; el paso 3 de SPEC 07 migra a GameStats.
+export type AsteroidsStats = Required<GameStats>;
 
 export interface AsteroidsCallbacks {
   onStats: (stats: AsteroidsStats) => void; // solo cuando cambia algún valor
@@ -37,7 +35,7 @@ export interface AsteroidsCallbacks {
 
 const GAME_KEYS = ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
-export class AsteroidsEngine {
+export class AsteroidsEngine implements GameEngine {
   private ctx: CanvasRenderingContext2D;
 
   private ship = new Ship();
