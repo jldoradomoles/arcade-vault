@@ -750,6 +750,17 @@ a {
   filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.55));
 }
 
+/* TETRIS: pozo con la pila y la pieza cayendo, con los colores del juego */
+.cover-tetris {
+  background: radial-gradient(ellipse at 50% 40%, #1c0f2e 0, #07030d 75%, #000);
+}
+.cover-tetris::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/tetris.svg") center / cover no-repeat;
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

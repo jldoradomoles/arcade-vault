@@ -1,24 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { W, H } from "@/lib/asteroids/constants";
-import { AsteroidsEngine, type AsteroidsStats } from "@/lib/asteroids/engine";
+import type { CreateEngine, GameEngine, GameStats } from "@/lib/game-engine";
 
-interface AsteroidsCanvasProps {
+interface GameCanvasProps {
+  createEngine: CreateEngine;
+  width: number;
+  height: number;
   paused: boolean;
   over: boolean; // true => el motor llama a finish()
-  onStats: (stats: AsteroidsStats) => void;
+  onStats: (stats: GameStats) => void;
   onGameOver: (finalScore: number) => void;
 }
 
-export function AsteroidsCanvas({
+export function GameCanvas({
+  createEngine,
+  width,
+  height,
   paused,
   over,
   onStats,
   onGameOver,
-}: AsteroidsCanvasProps) {
+}: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef<AsteroidsEngine | null>(null);
+  const engineRef = useRef<GameEngine | null>(null);
 
   // El motor se crea una sola vez; los callbacks se leen de refs para no recrearlo en cada render
   const callbacksRef = useRef({ onStats, onGameOver });
@@ -29,7 +34,7 @@ export function AsteroidsCanvas({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const engine = new AsteroidsEngine(canvas, {
+    const engine = createEngine(canvas, {
       onStats: (s) => callbacksRef.current.onStats(s),
       onGameOver: (score) => callbacksRef.current.onGameOver(score),
     });
@@ -39,7 +44,8 @@ export function AsteroidsCanvas({
       engine.destroy();
       engineRef.current = null;
     };
-  }, []);
+    // createEngine viene del registro (referencia estable por juego)
+  }, [createEngine]);
 
   useEffect(() => {
     engineRef.current?.setPaused(paused);
@@ -52,9 +58,10 @@ export function AsteroidsCanvas({
   return (
     <canvas
       ref={canvasRef}
-      width={W}
-      height={H}
-      className="block aspect-[4/3] w-full"
+      width={width}
+      height={height}
+      className="block w-full"
+      style={{ aspectRatio: `${width} / ${height}` }}
     />
   );
 }

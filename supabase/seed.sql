@@ -5,7 +5,10 @@
 insert into public.games (id, title, short, long, category, cover, color, sort_order) values
   ('asteroids', 'ASTEROIDS', 'Sobrevive en un campo de asteroides en gravedad cero.',
    'Pilota una nave en un espacio sin bordes: lo que sale por un lado entra por el otro. Dispara a las rocas para partirlas en fragmentos cada vez más pequeños y recoge power-ups: disparo triple, escudo temporal y la rara Bomba Nova. Tienes tres vidas y cada nivel llega más cargado.',
-   'SHOOTER', 'cover-asteroids', 'cyan', 9)
+   'SHOOTER', 'cover-asteroids', 'cyan', 9),
+  ('tetris', 'TETRIS', 'Encaja las piezas y limpia líneas antes de que el tablero se llene.',
+   'Ordena las piezas que caen en un tablero de 10×20 y completa líneas para puntuar. Cada diez líneas sube el nivel y la caída se acelera. Cada cinco líneas llega un power-up: bomba, rayo, tinte, gravedad o congelar el tiempo. La partida termina cuando una pieza nueva ya no cabe.',
+   'PUZZLE', 'cover-tetris', 'magenta', 10)
 on conflict (id) do nothing;
 
 -- 2. Usuario de prueba con cuenta real: test@arcadevault.gg / PLAYERTEST ---------
@@ -49,7 +52,10 @@ select md5('PLAYERTEST|' || game_id || '|' || score)::uuid,
 from (values
   ('asteroids', 26500, 3),
   ('asteroids', 14200, 9),
-  ('asteroids',  8900, 15)
+  ('asteroids',  8900, 15),
+  ('tetris', 18400, 2),
+  ('tetris',  9600, 6),
+  ('tetris',  4300, 12)
 ) as t(game_id, score, days)
 where exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-000000000001')
 on conflict (id) do nothing;

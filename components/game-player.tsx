@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AsteroidsCanvas } from "@/components/asteroids-canvas";
+import { GameCanvas } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
-import type { AsteroidsStats } from "@/lib/asteroids/engine";
+import type { GameStats } from "@/lib/game-engine";
+import { GAME_REGISTRY } from "@/lib/game-registry";
 import type { Game } from "@/lib/games";
 import { submitScore } from "@/app/juegos/[id]/jugar/actions";
 
@@ -18,21 +19,14 @@ const fmt = (n: number) => n.toLocaleString("es-ES");
 const LIVES = 3;
 const POINTS_PER_LEVEL = 2500;
 
-const ASTEROIDS_CONTROLS: { keys: string[]; action: string }[] = [
-  { keys: ["←", "→"], action: "Girar" },
-  { keys: ["↑"], action: "Propulsar" },
-  { keys: ["Espacio"], action: "Disparar" },
-  { keys: ["B"], action: "Bomba Nova, si la tienes" },
-];
-
-// Asteroids es un juego real (motor en lib/asteroids): puntos, vidas y nivel vienen del motor.
-// Los demás juegos siguen con un reproductor simulado: el puntaje sube solo.
+// Los juegos con entrada en GAME_REGISTRY tienen motor real: puntos, vidas y nivel vienen del motor
+// (lo que el motor no emite, el HUD lo oculta). Los demás siguen con un reproductor simulado.
 export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const { user } = useSession();
-  const isAsteroids = game.id === "asteroids";
+  const entry = GAME_REGISTRY[game.id];
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(LIVES);
-  const [engineLevel, setEngineLevel] = useState(1);
+  const [lives, setLives] = useState<number | undefined>(LIVES);
+  const [engineLevel, setEngineLevel] = useState<number | undefined>(1);
   const [runKey, setRunKey] = useState(0);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
@@ -41,11 +35,11 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const name = user?.name.toUpperCase() ?? "INVITADO";
-  const level = isAsteroids
+  const level = entry
     ? engineLevel
     : 1 + Math.floor(score / POINTS_PER_LEVEL);
 
-  const onStats = (stats: AsteroidsStats) => {
+  const onStats = (stats: GameStats) => {
     setScore(stats.score);
     setLives(stats.lives);
     setEngineLevel(stats.level);
@@ -57,18 +51,18 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   };
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (entry || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [entry, over, paused]);
 
   const restart = () => {
     setScore(0);
-    setLives(LIVES);
-    setEngineLevel(1);
+    setLives(entry ? undefined : LIVES);
+    setEngineLevel(entry ? undefined : 1);
     setRunKey((k) => k + 1); // remonta el canvas: motor nuevo
     setPaused(false);
     setOver(false);
@@ -102,14 +96,18 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
             <div className="l">Puntuación</div>
             <div className="v">{fmt(score)}</div>
           </div>
-          <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim()}</div>
-          </div>
-          <div className="hud-stat level">
-            <div className="l">Nivel</div>
-            <div className="v">{String(level).padStart(2, "0")}</div>
-          </div>
+          {lives !== undefined && (
+            <div className="hud-stat lives">
+              <div className="l">Vidas</div>
+              <div className="v">{"♥ ".repeat(lives).trim()}</div>
+            </div>
+          )}
+          {level !== undefined && (
+            <div className="hud-stat level">
+              <div className="l">Nivel</div>
+              <div className="v">{String(level).padStart(2, "0")}</div>
+            </div>
+          )}
         </div>
         <div className="hud-actions">
           <button
@@ -132,11 +130,29 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
         </div>
       </div>
 
-      <div className="crt">
-        <div className="crt-screen">
-          {isAsteroids ? (
-            <AsteroidsCanvas
+      <div
+        className="crt mx-auto"
+        style={
+          entry && entry.height > entry.width
+            ? // juego vertical: el ancho se limita para que la pantalla quepa en la ventana
+              { maxWidth: `calc(72vh * ${entry.width / entry.height} + 48px)` }
+            : undefined
+        }
+      >
+        <div
+          className="crt-screen"
+          style={
+            entry
+              ? { aspectRatio: `${entry.width} / ${entry.height}` }
+              : undefined
+          }
+        >
+          {entry ? (
+            <GameCanvas
               key={runKey}
+              createEngine={entry.createEngine}
+              width={entry.width}
+              height={entry.height}
               paused={paused}
               over={over}
               onStats={onStats}
@@ -169,12 +185,12 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
         </div>
       </div>
 
-      {isAsteroids && (
+      {entry && (
         <ul
           aria-label="Controles"
           className="mono mt-6 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] text-ink-dim"
         >
-          {ASTEROIDS_CONTROLS.map(({ keys, action }) => (
+          {entry.controls.map(({ keys, action }) => (
             <li key={action} className="flex items-center gap-2">
               <span className="flex gap-1">
                 {keys.map((k) => (
