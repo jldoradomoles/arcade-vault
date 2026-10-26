@@ -1,6 +1,6 @@
 # SPEC 02 — Página de Inicio (landing) y acceso "Inicio" en el header
 
-> **Status:** aprobado
+> **Status:** implemnetado
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-15
 > **Objective:** Crear la página Home (landing) del template en `/`, añadir el acceso "Inicio" al header y mover la Biblioteca a `/biblioteca`.

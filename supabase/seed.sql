@@ -8,7 +8,10 @@ insert into public.games (id, title, short, long, category, cover, color, sort_o
    'SHOOTER', 'cover-asteroids', 'cyan', 9),
   ('tetris', 'TETRIS', 'Encaja las piezas y limpia líneas antes de que el tablero se llene.',
    'Ordena las piezas que caen en un tablero de 10×20 y completa líneas para puntuar. Cada diez líneas sube el nivel y la caída se acelera. Cada cinco líneas llega un power-up: bomba, rayo, tinte, gravedad o congelar el tiempo. La partida termina cuando una pieza nueva ya no cabe.',
-   'PUZZLE', 'cover-tetris', 'magenta', 10)
+   'PUZZLE', 'cover-tetris', 'magenta', 10),
+  ('arkanoid', 'ARKANOID', 'Rompe todos los bloques con la bola sin dejarla caer.',
+   'Mueve la paleta para devolver la bola y derribar los muros de bloques de colores. El rebote cambia según dónde golpees la paleta. Hay tres niveles cada vez más rápidos y, desde el segundo, bloques grises que aguantan dos golpes. Tienes tres vidas y ganas si vacías el último nivel.',
+   'ARCADE', 'cover-arkanoid', 'yellow', 11)
 on conflict (id) do nothing;
 
 -- 2. Usuario de prueba con cuenta real: test@arcadevault.gg / PLAYERTEST ---------
@@ -55,7 +58,10 @@ from (values
   ('asteroids',  8900, 15),
   ('tetris', 18400, 2),
   ('tetris',  9600, 6),
-  ('tetris',  4300, 12)
+  ('tetris',  4300, 12),
+  ('arkanoid', 3200, 1),
+  ('arkanoid', 1900, 5),
+  ('arkanoid',  800, 11)
 ) as t(game_id, score, days)
 where exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-000000000001')
 on conflict (id) do nothing;
