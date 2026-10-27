@@ -30,7 +30,9 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const { user } = useSession();
   const entry = GAME_REGISTRY[game.id];
   const isTouch = useTouchDevice();
-  const touchLayout = entry ? deriveTouchLayout(entry.controls) : null;
+  const touchLayout = entry
+    ? deriveTouchLayout(entry.controls, entry.touchStyle)
+    : null;
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState<number | undefined>(LIVES);
   const [engineLevel, setEngineLevel] = useState<number | undefined>(1);

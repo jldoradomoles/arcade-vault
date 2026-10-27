@@ -10,11 +10,14 @@ import { SnakeEngine } from "@/lib/snake/engine";
 import { H as TETRIS_H, W as TETRIS_W } from "@/lib/tetris/constants";
 import { TetrisEngine } from "@/lib/tetris/engine";
 
+export type TouchStyle = "default" | "arcade";
+
 export interface GameEntry {
   width: number;
   height: number;
   createEngine: CreateEngine;
   controls: { keys: string[]; action: string }[]; // línea de ayuda bajo el CRT
+  touchStyle?: TouchStyle;
 }
 
 export const GAME_REGISTRY: Record<string, GameEntry> = {
@@ -49,8 +52,8 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
     controls: [
       { keys: ["←", "→"], action: "Mover" },
       { keys: ["Espacio"], action: "Lanzar" },
-      { keys: ["Ratón"], action: "Mover y lanzar (clic)" },
     ],
+    touchStyle: "arcade",
   },
   snake: {
     width: SNAKE_W,

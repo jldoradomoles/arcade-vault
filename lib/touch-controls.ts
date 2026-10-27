@@ -10,10 +10,13 @@ export interface ActionButton {
   key: string;
 }
 
+import type { TouchStyle } from "@/lib/game-registry";
+
 export interface TouchLayout {
   dpad: DpadButton[];
   actions: ActionButton[];
   canvasDrag: boolean;
+  style: TouchStyle;
 }
 
 const ARROWS = new Set(["←", "→", "↑", "↓"]);
@@ -37,6 +40,7 @@ function labelToKeyCode(label: string): { code: string; key: string } {
 
 export function deriveTouchLayout(
   controls: { keys: string[]; action: string }[],
+  touchStyle: TouchStyle = "default",
 ): TouchLayout {
   const dpad: DpadButton[] = [];
   const actions: ActionButton[] = [];
@@ -78,5 +82,5 @@ export function deriveTouchLayout(
     }
   }
 
-  return { dpad, actions, canvasDrag };
+  return { dpad, actions, canvasDrag, style: touchStyle };
 }

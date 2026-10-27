@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useEffect } from "react";
-import type { TouchLayout } from "@/lib/touch-controls";
+import type { DpadButton, TouchLayout } from "@/lib/touch-controls";
 
 interface TouchControlsProps {
   layout: TouchLayout;
@@ -82,6 +82,12 @@ export function TouchControls({ layout, disabled }: TouchControlsProps) {
   const hasActions = layout.actions.length > 0;
   if (!hasDpad && !hasActions) return null;
 
+  if (layout.style === "arcade") {
+    return (
+      <ArcadeGamepad layout={layout} disabled={disabled} setRef={setRef} />
+    );
+  }
+
   return (
     <div
       className={`tc-wrap${disabled ? " tc-disabled" : ""}`}
@@ -124,6 +130,89 @@ export function TouchControls({ layout, disabled }: TouchControlsProps) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+interface ArcadeGamepadProps {
+  layout: TouchLayout;
+  disabled: boolean;
+  setRef: (el: HTMLButtonElement | null) => void;
+}
+
+const DPAD_DIRECTIONS: DpadButton["direction"][] = [
+  "up",
+  "left",
+  "right",
+  "down",
+];
+const AB_LETTERS = ["A", "B"] as const;
+const AB_CLASSES = ["a", "b"] as const;
+
+function ArcadeGamepad({ layout, disabled, setRef }: ArcadeGamepadProps) {
+  const dpadByDir = new Map(layout.dpad.map((btn) => [btn.direction, btn]));
+  const actions = layout.actions.slice(0, 2);
+
+  return (
+    <div
+      className={`av-gp av-gp-neon${disabled ? " tc-disabled" : ""}`}
+      role="group"
+      aria-label="Controles táctiles"
+    >
+      <div className="av-gp-body">
+        <div className="av-gp-col av-gp-col-left">
+          <div className="av-gp-dpad">
+            {DPAD_DIRECTIONS.map((dir) => {
+              const btn = dpadByDir.get(dir);
+              if (!btn) {
+                return (
+                  <div
+                    key={dir}
+                    className={`av-dp av-dp-${dir} av-dp-empty`}
+                    aria-hidden="true"
+                  />
+                );
+              }
+              return (
+                <button
+                  key={dir}
+                  ref={setRef}
+                  type="button"
+                  className={`av-dp av-dp-${dir}`}
+                  data-code={btn.code}
+                  data-keyval={btn.key}
+                  aria-label={dir}
+                >
+                  <span className="av-dp-arrow">{DPAD_ARROW[dir]}</span>
+                </button>
+              );
+            })}
+            <div className="av-dp-hub" aria-hidden="true">
+              <div className="av-dp-hub-gem" />
+            </div>
+          </div>
+        </div>
+        <div className="av-gp-col av-gp-col-right">
+          <div
+            className={`av-gp-actions${actions.length === 1 ? " av-gp-actions-single" : ""}`}
+          >
+            {actions.map((btn, i) => (
+              <button
+                key={btn.label}
+                ref={setRef}
+                type="button"
+                className={`av-ab av-ab-${AB_CLASSES[i]}`}
+                data-code={btn.code}
+                data-keyval={btn.key}
+                aria-label={btn.label}
+              >
+                <span className="av-ab-letter">{AB_LETTERS[i]}</span>
+                <span className="av-ab-ring" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
