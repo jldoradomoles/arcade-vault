@@ -935,6 +935,7 @@ a {
   max-width: 1100px;
   margin: 32px auto;
   padding: 0 24px 64px;
+  touch-action: manipulation;
 }
 .player-hud {
   display: flex;
@@ -983,6 +984,8 @@ a {
   border-radius: 28px;
   background: #050507;
   padding: 24px;
+  user-select: none;
+  -webkit-user-select: none;
   box-shadow:
     0 0 0 6px #1b1b22,
     0 0 0 7px #2a2a35,
@@ -1067,6 +1070,74 @@ a {
   border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 6px var(--green);
+}
+
+/* ===== touch controls ===== */
+.tc-wrap {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 8px 0;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tc-disabled .tc-btn {
+  opacity: 0.3;
+}
+.tc-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(3, 52px);
+  gap: 4px;
+}
+.tc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  background: rgba(0, 245, 255, 0.06);
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  color: var(--cyan);
+  font-family: var(--pixel);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background 60ms,
+    box-shadow 60ms;
+}
+.tc-btn:active {
+  background: rgba(0, 245, 255, 0.2);
+  box-shadow:
+    0 0 14px rgba(0, 245, 255, 0.5),
+    inset 0 0 8px rgba(0, 245, 255, 0.25);
+}
+.tc-dir {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+  border-radius: 6px;
+}
+.tc-act {
+  padding: 12px 18px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  border-color: rgba(255, 0, 110, 0.3);
+  color: var(--magenta);
+  background: rgba(255, 0, 110, 0.06);
+}
+.tc-act:active {
+  background: rgba(255, 0, 110, 0.2);
+  box-shadow:
+    0 0 14px rgba(255, 0, 110, 0.5),
+    inset 0 0 8px rgba(255, 0, 110, 0.25);
+}
+.tc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
 }
 
 /* fake in-screen game */
@@ -1611,6 +1682,42 @@ a {
   }
   .av-player {
     padding: 0 16px 32px;
+    margin-top: 12px;
+  }
+  .player-hud {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .hud-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hud-stat .l {
+    font-size: 9px;
+  }
+  .hud-stat .v {
+    font-size: 13px;
+  }
+  .crt {
+    padding: 12px;
+    border-radius: 16px;
+  }
+  .crt-screen {
+    border-radius: 6px / 14px;
+  }
+  .crt-bottom {
+    font-size: 7px;
+    margin-top: 8px;
+  }
+  .modal {
+    padding: 20px;
+  }
+  .modal h2 {
+    font-size: 16px;
+  }
+  .modal .final {
+    font-size: 28px;
   }
 }
 

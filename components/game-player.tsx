@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { GameCanvas } from "@/components/game-canvas";
 import { GameSkinPicker } from "@/components/game-skin-picker";
+import { TouchControls } from "@/components/touch-controls";
 import { useSession } from "@/components/session-provider";
 import type { GameStats } from "@/lib/game-engine";
 import { GAME_REGISTRY } from "@/lib/game-registry";
 import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import type { Game } from "@/lib/games";
+import { deriveTouchLayout } from "@/lib/touch-controls";
+import { useTouchDevice } from "@/lib/use-touch-device";
 import { submitScore } from "@/app/juegos/[id]/jugar/actions";
 
 const SAVE_ERRORS = {
@@ -26,6 +29,8 @@ const POINTS_PER_LEVEL = 2500;
 export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
   const { user } = useSession();
   const entry = GAME_REGISTRY[game.id];
+  const isTouch = useTouchDevice();
+  const touchLayout = entry ? deriveTouchLayout(entry.controls) : null;
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState<number | undefined>(LIVES);
   const [engineLevel, setEngineLevel] = useState<number | undefined>(1);
@@ -158,6 +163,7 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
               paused={paused}
               over={over}
               skin={skin}
+              enableTouchDrag={isTouch && !!touchLayout?.canvasDrag}
               onStats={onStats}
               onGameOver={onGameOver}
             />
@@ -188,7 +194,11 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
         </div>
       </div>
 
-      {entry && (
+      {entry && isTouch && touchLayout && (
+        <TouchControls layout={touchLayout} disabled={paused || over} />
+      )}
+
+      {entry && !isTouch && (
         <ul
           aria-label="Controles"
           className="mono mt-6 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] text-ink-dim"
