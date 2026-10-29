@@ -31,6 +31,37 @@ export async function proxy(request: NextRequest) {
 
   await supabase.auth.getClaims();
 
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    const pathname = request.nextUrl.pathname;
+    const isExcluded =
+      pathname === "/completar-perfil" || pathname.startsWith("/auth/");
+
+    if (!isExcluded) {
+      // Fast path: usuarios email tienen username en user_metadata (sin consulta DB).
+      const metaUsername = session.user.user_metadata?.username as
+        string | undefined;
+
+      if (!metaUsername) {
+        // Usuarios OAuth: verificar en profiles.
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (!profile?.username) {
+          return NextResponse.redirect(
+            new URL("/completar-perfil", request.url),
+          );
+        }
+      }
+    }
+  }
+
   return response;
 }
 
