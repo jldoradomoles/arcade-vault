@@ -9,7 +9,7 @@ const MIN_PASSWORD = 6;
 
 export function AuthForm() {
   const router = useRouter();
-  const { signIn, signUp } = useSession();
+  const { signIn, signUp, signInWithProvider } = useSession();
   const [tab, setTab] = useState<"in" | "up">("in");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -148,10 +148,18 @@ export function AuthForm() {
 
         <div className="auth-divider">O CONTINÚA CON</div>
         <div className="social">
-          <button className="btn ghost" type="button">
+          <button
+            className="btn ghost"
+            type="button"
+            onClick={() => signInWithProvider("google")}
+          >
             ◆ GOOGLE
           </button>
-          <button className="btn ghost" type="button">
+          <button
+            className="btn ghost"
+            type="button"
+            onClick={() => signInWithProvider("github")}
+          >
             ▣ GITHUB
           </button>
         </div>

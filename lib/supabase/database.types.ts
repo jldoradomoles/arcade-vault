@@ -54,17 +54,17 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
-          username: string;
+          username: string | null;
         };
         Insert: {
           created_at?: string;
           id: string;
-          username: string;
+          username?: string | null;
         };
         Update: {
           created_at?: string;
           id?: string;
-          username?: string;
+          username?: string | null;
         };
         Relationships: [];
       };

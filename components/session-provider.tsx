@@ -24,6 +24,7 @@ interface SessionContextValue {
     password: string,
   ) => Promise<string | null>;
   signOut: () => Promise<void>;
+  signInWithProvider: (provider: "google" | "github") => Promise<void>;
 }
 
 // Supabase devuelve mensajes en inglés; el trigger handle_new_user falla con un error genérico
@@ -87,7 +88,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       .maybeSingle()
       .then(({ data }) => {
         if (!cancelled)
-          setProfile(data ? { id: userId, name: data.username } : null);
+          setProfile(
+            data?.username ? { id: userId, name: data.username } : null,
+          );
       });
     return () => {
       cancelled = true;
@@ -126,9 +129,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     await getSupabase().auth.signOut();
   }, []);
 
+  const signInWithProvider = useCallback(
+    async (provider: "google" | "github") => {
+      const origin = window.location.origin;
+      await getSupabase().auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${origin}/auth/callback` },
+      });
+    },
+    [],
+  );
+
   const value = useMemo(
-    () => ({ user, signIn, signUp, signOut }),
-    [user, signIn, signUp, signOut],
+    () => ({ user, signIn, signUp, signOut, signInWithProvider }),
+    [user, signIn, signUp, signOut, signInWithProvider],
   );
 
   return (

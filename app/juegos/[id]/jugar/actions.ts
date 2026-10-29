@@ -44,7 +44,7 @@ export async function submitScore(input: {
   const { error } = await supabase.from("scores").insert({
     game_id: gameId,
     user_id: user.id,
-    player_name: profile.data.username,
+    player_name: profile.data.username ?? "?",
     score,
   });
   if (error) return { ok: false, error: "failed" };

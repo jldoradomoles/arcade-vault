@@ -30,7 +30,7 @@ async function getMyBests(gameIds: string[]): Promise<MyBests | null> {
     const best = bests[i];
     if (best) byGame[id] = best;
   });
-  return { name: profile.data.username.toUpperCase(), byGame };
+  return { name: (profile.data.username ?? "?").toUpperCase(), byGame };
 }
 
 async function SalonGames() {
