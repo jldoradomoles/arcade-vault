@@ -1771,6 +1771,28 @@ a {
   opacity: 0.6;
   cursor: progress;
 }
+.auth-password-rules {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: rgba(0, 245, 255, 0.04);
+  border: 1px solid rgba(0, 245, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.auth-password-rules li {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  transition: color 0.15s;
+}
+.auth-password-rules .rule-ok {
+  color: var(--cyan);
+}
+.auth-password-rules .rule-fail {
+  color: var(--ink-faint);
+}
 .auth-divider {
   display: flex;
   align-items: center;
