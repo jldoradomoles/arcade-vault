@@ -4,7 +4,7 @@ Guía para Claude Code (claude.ai/code) al trabajar en este repositorio.
 
 ## Proyecto
 
-Arcade Vault: plataforma para jugar online y competir por la mayor cantidad de puntos. Se desarrolla con Spec Driven Design (`/spec` y `/spec-impl` del paquete `Klerith/fernando-skills`, instalado con `npx skills@latest add Klerith/fernando-skills`). Las specs viven en `specs/NN-*.md`. Hay 9 specs entregadas: pantallas MVP, home/landing, acerca/contacto con Resend, conexión Supabase, Asteroids, leaderboard + tabla `games`, Tetris, Arkanoid y Snake.
+Arcade Vault: plataforma para jugar online y competir por la mayor cantidad de puntos. Se desarrolla con Spec Driven Design (`/spec` y `/spec-impl` del paquete `Klerith/fernando-skills`, instalado con `npx skills@latest add Klerith/fernando-skills`). Las specs viven en `specs/NN-*.md`. Hay 11 specs entregadas: pantallas MVP, home/landing, acerca/contacto con Resend, conexión Supabase, Asteroids, leaderboard + tabla `games`, Tetris, Arkanoid, Snake, controles táctiles móvil y gamepad arcade Arkanoid. Frogger tiene su spec en `specs/game-jam/frogger/01-frogger-core.md` (estado: implementado).
 
 Responde siempre en español.
 
@@ -12,7 +12,7 @@ Responde siempre en español.
 
 - `app/`: App Router. Rutas `/` (home), `/acerca-de`, `/biblioteca`, `/salon`, `/acceso`, `/juegos/[id]` (ficha) y `/juegos/[id]/jugar` (reproductor). `actions.ts` por ruta para Server Actions.
 - `components/`: UI compartida. `nav.tsx`, `footer.tsx`, `session-provider.tsx`, `auth-form.tsx`, `game-canvas.tsx`, `game-player.tsx`, `game-card.tsx`, `hall-of-fame.tsx`, `library.tsx`, y subcarpetas `home/` y `about/`.
-- `lib/`: lógica de negocio. `game-engine.ts` (contrato de motor), `game-registry.ts` (mapa `id → motor + controles`), `game-types.ts`, `games.ts`, `scores.ts`, `home.ts`, `contact.ts`. Cada juego tiene su carpeta (`asteroids/`, `tetris/`, `arkanoid/`, `snake/`) con `constants.ts`, `engine.ts` y `entities.ts`. Cliente Supabase en `lib/supabase/`.
+- `lib/`: lógica de negocio. `game-engine.ts` (contrato de motor), `game-registry.ts` (mapa `id → motor + controles`), `game-types.ts`, `games.ts`, `scores.ts`, `home.ts`, `contact.ts`. Cada juego tiene su carpeta (`asteroids/`, `tetris/`, `arkanoid/`, `snake/`, `frogger/`) con `constants.ts`, `engine.ts` y `entities.ts`. Cliente Supabase en `lib/supabase/`.
 - `supabase/`: `seed.sql` y `migrations/` con el histórico de la BD (perfiles, scores, games y filas por juego nuevo).
 - `specs/`: specs numeradas en Spec Driven Design.
 - `references/`: material de apoyo (`started-games/`, `templates/`, `resource-assets/`).
@@ -22,6 +22,8 @@ Responde siempre en español.
 
 - `/frontend-design`: úsalo siempre que diseñes una interfaz de usuario.
 - `/nuevo-juego` (en `.claude/skills/nuevo-juego/`): genera la spec de un juego nuevo (motor + leaderboard + HUD de plataforma) a partir de una carpeta de `references/started-games/` o de una descripción. **Solo escribe la spec**; la implementación la hace después `/spec-impl`.
+- `/arcade-gamepad <game-id>` (en `.claude/skills/arcade-gamepad/`): activa el estilo visual `arcade` del gamepad táctil para un juego concreto (añade `touchStyle:"arcade"` en el GAME_REGISTRY). Requiere que SPEC 11 ya esté implementada.
+- `/spec-impl-game <NN-spec>` (en `.claude/skills/spec-impl-game/`): pipeline completo para un juego nuevo — implementa la spec y lanza secuencialmente `skin-designer`, `arcade-gamepad` y `mobile-porter` + implementación de controles móviles.
 
 ## Subagentes del proyecto
 
@@ -60,7 +62,7 @@ Middleware fuera de lo habitual: el archivo se llama `proxy.ts` (no `middleware.
 
 Contrato en `lib/game-engine.ts`; cada juego implementa su `Engine` (`init`, `start`, `pause`, `resume`, `reset`, `dispose`) y se registra en `lib/game-registry.ts` con `width`, `height`, `createEngine` y la línea de ayuda de controles. HUD, pausa, game over, reinicio y guardado de puntuación los pone la plataforma (`components/game-player.tsx`), no el juego. Para añadir uno nuevo: usa `/nuevo-juego` para la spec y luego `/spec-impl`.
 
-- Juegos implementados (ver `references/implemented-games.md`): Asteroids, Tetris, Arkanoid, Snake.
+- Juegos implementados (ver `references/implemented-games.md`): Asteroids, Tetris, Arkanoid, Snake, Frogger.
 
 ## Convenciones
 
