@@ -1,6 +1,6 @@
 # SPEC 11 — Gamepad arcade para Arkanoid
 
-> **Status:** aprobado
+> **Status:** implementado
 > **Depends on:** SPEC 08, SPEC 10
 > **Date:** 2026-10-27
 > **Objective:** Rediseñar los controles táctiles de Arkanoid con la carcasa de gamepad arcade del template `references/templates/home-about/styles.css`, exponiendo el estilo como opción activable por juego.
@@ -65,15 +65,15 @@ Cada paso deja el proyecto compilando y jugable.
 
 ## Criterios de aceptación
 
-- [ ] `GAME_REGISTRY["arkanoid"].touchStyle === "arcade"`; ninguna otra entrada declara `touchStyle`.
-- [ ] En viewport móvil, Arkanoid muestra `<div class="gp gp-neon">` con `.gp-body` que contiene `.gp-dpad` y `.gp-actions`.
-- [ ] El D-pad renderiza botones solo para `.dp-left` y `.dp-right`; `.dp-up` y `.dp-down` existen en el DOM sólo si hay un slot vacío decorativo y nunca disparan `KeyboardEvent`.
-- [ ] El hub central `.dp-hub` incluye `.dp-hub-gem` con la animación `pulse-led`.
-- [ ] Hay un único botón `.ab.a` (magenta) etiquetado como la acción de lanzar bola; pulsarlo dispara `KeyboardEvent` con `code === "Space"`.
-- [ ] En desktop con viewport `>620 px` (o cuando `useTouchDevice` devuelve `false`), el gamepad `arcade` no se muestra, igual que SPEC 10 oculta hoy `.tc-wrap`.
-- [ ] Asteroids, Tetris y Snake renderizan en móvil el gamepad clásico (`.tc-wrap`) sin cambios visuales ni funcionales.
-- [ ] La skin elegida por `GameSkinPicker` no altera los colores del gamepad `arcade` (sigue cian cualquiera que sea `classic`/`neon`/`retro`).
-- [ ] El motor `lib/arkanoid/engine.ts` no se modifica y responde a los eventos como hasta ahora.
+- [x] `GAME_REGISTRY["arkanoid"].touchStyle === "arcade"`; ninguna otra entrada declara `touchStyle`.
+- [x] En viewport móvil, Arkanoid muestra `<div class="av-gp av-gp-neon">` con `.av-gp-body` que contiene `.av-gp-dpad` y `.av-gp-actions`. (Las clases llevan el prefijo `av-` para evitar colisiones CSS, tal como señalaba la sección de riesgos.)
+- [x] El D-pad renderiza botones solo para `.av-dp-left` y `.av-dp-right`; `.av-dp-up` y `.av-dp-down` existen en el DOM solo como `<div av-dp-empty aria-hidden>` decorativo y nunca disparan `KeyboardEvent`.
+- [x] El hub central `.av-dp-hub` incluye `.av-dp-hub-gem` con la animación `pulse-led`.
+- [x] Hay un único botón `.av-ab.av-ab-a` (magenta) etiquetado como la acción de lanzar bola; pulsarlo dispara `KeyboardEvent` con `code === "Space"`.
+- [x] En desktop con viewport `>620 px` (o cuando `useTouchDevice` devuelve `false`), el gamepad `arcade` no se muestra, igual que SPEC 10 oculta hoy `.tc-wrap`.
+- [x] Asteroids, Tetris y Snake renderizan en móvil el gamepad clásico (`.tc-wrap`) sin cambios visuales ni funcionales.
+- [x] La skin elegida por `GameSkinPicker` no altera los colores del gamepad `arcade` (sigue cian cualquiera que sea `classic`/`neon`/`retro`).
+- [x] El motor `lib/arkanoid/engine.ts` no se modifica y responde a los eventos como hasta ahora.
 
 ## Decisiones tomadas y descartadas
 

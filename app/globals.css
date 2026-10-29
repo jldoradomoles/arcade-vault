@@ -793,6 +793,17 @@ a {
   background: url("/covers/snake.svg") center / cover no-repeat;
 }
 
+/* FROGGER: carretera y río con la rana saltando entre troncos y coches */
+.cover-frogger {
+  background: radial-gradient(ellipse at 50% 60%, #0d2209 0, #060e04 70%, #000);
+}
+.cover-frogger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/frogger.svg") center / cover no-repeat;
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

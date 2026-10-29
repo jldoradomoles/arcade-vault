@@ -5,6 +5,8 @@ import { ArkanoidEngine } from "@/lib/arkanoid/engine";
 import { H, W } from "@/lib/asteroids/constants";
 import { AsteroidsEngine } from "@/lib/asteroids/engine";
 import type { CreateEngine } from "@/lib/game-engine";
+import { H as FROGGER_H, W as FROGGER_W } from "@/lib/frogger/constants";
+import { FroggerEngine } from "@/lib/frogger/engine";
 import { H as SNAKE_H, W as SNAKE_W } from "@/lib/snake/constants";
 import { SnakeEngine } from "@/lib/snake/engine";
 import { H as TETRIS_H, W as TETRIS_W } from "@/lib/tetris/constants";
@@ -32,6 +34,7 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["Espacio"], action: "Disparar" },
       { keys: ["B"], action: "Bomba Nova, si la tienes" },
     ],
+    touchStyle: "arcade",
   },
   tetris: {
     width: TETRIS_W,
@@ -43,6 +46,7 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["↓"], action: "Bajar" },
       { keys: ["Espacio"], action: "Caída" },
     ],
+    touchStyle: "arcade",
   },
   arkanoid: {
     width: ARKANOID_W,
@@ -64,5 +68,17 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["←", "↑", "→", "↓"], action: "Mover" },
       { keys: ["A", "W", "D", "S"], action: "Mover" },
     ],
+    touchStyle: "arcade",
+  },
+  frogger: {
+    width: FROGGER_W,
+    height: FROGGER_H,
+    createEngine: (canvas, callbacks, options) =>
+      new FroggerEngine(canvas, callbacks, options),
+    controls: [
+      { keys: ["↑", "↓", "←", "→"], action: "Saltar" },
+      { keys: ["W", "S", "A", "D"], action: "Saltar" },
+    ],
+    touchStyle: "arcade",
   },
 };
