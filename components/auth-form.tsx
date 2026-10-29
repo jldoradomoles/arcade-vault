@@ -5,7 +5,22 @@ import { useState } from "react";
 import { useSession } from "@/components/session-provider";
 
 const USERNAME_PATTERN = /^[A-Za-z0-9_]{3,10}$/;
-const MIN_PASSWORD = 6;
+
+const PASSWORD_RULES = [
+  {
+    id: "len",
+    label: "Mínimo 8 caracteres",
+    test: (p: string) => p.length >= 8,
+  },
+  { id: "upper", label: "Una mayúscula", test: (p: string) => /[A-Z]/.test(p) },
+  { id: "lower", label: "Una minúscula", test: (p: string) => /[a-z]/.test(p) },
+  { id: "digit", label: "Un número", test: (p: string) => /\d/.test(p) },
+  {
+    id: "special",
+    label: "Un carácter especial (!@#$…)",
+    test: (p: string) => /[^A-Za-z0-9]/.test(p),
+  },
+];
 
 export function AuthForm() {
   const router = useRouter();
@@ -27,8 +42,13 @@ export function AuthForm() {
       return "El usuario debe tener de 3 a 10 caracteres: letras, números o guion bajo.";
     }
     if (!email.trim()) return "Escribe tu correo electrónico.";
-    if (pass.length < MIN_PASSWORD) {
-      return `La contraseña debe tener al menos ${MIN_PASSWORD} caracteres.`;
+    if (tab === "up") {
+      const failing = PASSWORD_RULES.find((r) => !r.test(pass));
+      if (failing)
+        return `La contraseña no cumple: ${failing.label.toLowerCase()}.`;
+    } else {
+      if (pass.length < 8)
+        return "La contraseña debe tener al menos 8 caracteres.";
     }
     return null;
   };
@@ -119,6 +139,18 @@ export function AuthForm() {
               placeholder="••••••••"
               autoComplete={tab === "in" ? "current-password" : "new-password"}
             />
+            {tab === "up" && pass.length > 0 && (
+              <ul className="auth-password-rules">
+                {PASSWORD_RULES.map((r) => (
+                  <li
+                    key={r.id}
+                    className={r.test(pass) ? "rule-ok" : "rule-fail"}
+                  >
+                    {r.test(pass) ? "✓" : "✗"} {r.label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {error && (
