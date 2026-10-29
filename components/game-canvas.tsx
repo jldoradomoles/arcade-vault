@@ -11,6 +11,7 @@ interface GameCanvasProps {
   paused: boolean;
   over: boolean; // true => el motor llama a finish()
   skin?: SkinId;
+  enableTouchDrag?: boolean;
   onStats: (stats: GameStats) => void;
   onGameOver: (finalScore: number) => void;
 }
@@ -22,6 +23,7 @@ export function GameCanvas({
   paused,
   over,
   skin,
+  enableTouchDrag,
   onStats,
   onGameOver,
 }: GameCanvasProps) {
@@ -62,6 +64,39 @@ export function GameCanvas({
   useEffect(() => {
     if (over) engineRef.current?.finish();
   }, [over]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !enableTouchDrag) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      if (!touch) return;
+      canvas.dispatchEvent(
+        new MouseEvent("mousemove", {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+        }),
+      );
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+    return () => {
+      canvas.removeEventListener("touchstart", onTouchStart);
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [enableTouchDrag]);
 
   return (
     <canvas
