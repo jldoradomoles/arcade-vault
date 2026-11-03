@@ -35,7 +35,7 @@ function authMessage(error: { message: string; code?: string }): string {
       return "Correo o contraseña incorrectos.";
     case "user_already_exists":
     case "email_exists":
-      return "Ya existe una cuenta con ese correo.";
+      return "No se pudo completar el registro. Comprueba los datos e inténtalo de nuevo.";
     case "email_address_invalid":
     case "validation_failed":
       return "El correo electrónico no es válido.";

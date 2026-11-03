@@ -21,9 +21,11 @@ export async function proxy(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           );
-          Object.entries(headers).forEach(([key, value]) =>
-            response.headers.set(key, value),
-          );
+          if (headers) {
+            Object.entries(headers).forEach(([key, value]) =>
+              response.headers.set(key, value),
+            );
+          }
         },
       },
     },
@@ -32,25 +34,24 @@ export async function proxy(request: NextRequest) {
   await supabase.auth.getClaims();
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (session) {
+  if (user) {
     const pathname = request.nextUrl.pathname;
     const isExcluded =
       pathname === "/completar-perfil" || pathname.startsWith("/auth/");
 
     if (!isExcluded) {
       // Fast path: usuarios email tienen username en user_metadata (sin consulta DB).
-      const metaUsername = session.user.user_metadata?.username as
-        string | undefined;
+      const metaUsername = user.user_metadata?.username as string | undefined;
 
       if (!metaUsername) {
         // Usuarios OAuth: verificar en profiles.
         const { data: profile } = await supabase
           .from("profiles")
           .select("username")
-          .eq("id", session.user.id)
+          .eq("id", user.id)
           .maybeSingle();
 
         if (!profile?.username) {

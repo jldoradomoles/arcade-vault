@@ -30,6 +30,15 @@ export async function setUsername(
     return { ok: false, error: "No hay sesión activa." };
   }
 
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (existing?.username) {
+    return { ok: false, error: "El nombre de jugador ya está establecido." };
+  }
+
   const { error } = await supabase
     .from("profiles")
     .update({ username })
