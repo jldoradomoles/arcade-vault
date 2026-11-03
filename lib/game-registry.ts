@@ -7,6 +7,8 @@ import { AsteroidsEngine } from "@/lib/asteroids/engine";
 import type { CreateEngine } from "@/lib/game-engine";
 import { H as CROAK_H, W as CROAK_W } from "@/lib/croak/constants";
 import { CroakEngine } from "@/lib/croak/engine";
+import { H as ORBITAL_H, W as ORBITAL_W } from "@/lib/orbital/constants";
+import { OrbitalEngine } from "@/lib/orbital/engine";
 import { H as FROGGER_H, W as FROGGER_W } from "@/lib/frogger/constants";
 import { FroggerEngine } from "@/lib/frogger/engine";
 import { H as SNAKE_H, W as SNAKE_W } from "@/lib/snake/constants";
@@ -94,5 +96,14 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["Espacio"], action: "Disparar lengua" },
     ],
     touchStyle: "arcade",
+  },
+  orbital: {
+    width: ORBITAL_W,
+    height: ORBITAL_H,
+    createEngine: (canvas, callbacks) => new OrbitalEngine(canvas, callbacks),
+    controls: [
+      { keys: ["Ratón"], action: "Apuntar escudo" },
+      { keys: ["Espacio"], action: "Pulso" },
+    ],
   },
 };

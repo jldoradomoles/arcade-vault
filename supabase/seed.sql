@@ -17,7 +17,10 @@ insert into public.games (id, title, short, long, category, cover, color, sort_o
    'ARCADE', 'cover-snake', 'green', 12),
   ('croak', 'CROAK', 'Atrapa moscas con tu lengua antes de que escapen del pantano.',
    'Eres una rana en un nenúfar en el centro del pantano. Los insectos revolotean desde los bordes de la pantalla. Apunta con las flechas y dispara tu lengua para atraparlos antes de que crucen al otro lado. Moscas, libélulas y luciérnagas valen distinto. Cada insecto que escape te cuesta una vida.',
-   'SHOOTER', 'cover-croak', 'cyan', 14)
+   'SHOOTER', 'cover-croak', 'cyan', 14),
+  ('orbital', 'ORBITAL', 'Apunta tu escudo, encadena choques y protege el reactor.',
+   'Un reactor en el centro, un escudo que sigue a tu ratón y un flujo sin fin de bolas hostiles. Devuélvelas contra las demás para encadenar explosiones y subir el combo; usa el pulso cuando te rodeen. Cinco impactos y se acabó.',
+   'ARCADE', 'cover-orbital', 'magenta', 15)
 on conflict (id) do nothing;
 
 -- 2. Usuario de prueba con cuenta real: test@arcadevault.gg / PLAYERTEST ---------
@@ -73,7 +76,10 @@ from (values
   ('snake',  60, 13),
   ('croak', 3200, 2),
   ('croak', 1850, 6),
-  ('croak',  780, 11)
+  ('croak',  780, 11),
+  ('orbital', 4800, 3),
+  ('orbital', 2600, 8),
+  ('orbital',  950, 14)
 ) as t(game_id, score, days)
 where exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-000000000001')
 on conflict (id) do nothing;
