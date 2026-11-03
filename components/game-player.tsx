@@ -142,9 +142,8 @@ export function GamePlayer({ game }: { game: Pick<Game, "id" | "title"> }) {
       <div
         className="crt mx-auto"
         style={
-          entry && entry.height > entry.width
-            ? // juego vertical: el ancho se limita para que la pantalla quepa en la ventana
-              { maxWidth: `calc(72vh * ${entry.width / entry.height} + 48px)` }
+          entry
+            ? { maxWidth: `calc(72vh * ${entry.width / entry.height} + 48px)` }
             : undefined
         }
       >

@@ -804,6 +804,18 @@ a {
   background: url("/covers/frogger.svg") center / cover no-repeat;
 }
 
+/* CROAK: pantano nocturno con nenúfares, rana y luciérnagas */
+.cover-croak {
+  background: radial-gradient(ellipse at 50% 70%, #061a14 0, #030c08 70%, #000);
+}
+.cover-croak::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/croak.svg") center / cover no-repeat;
+  filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.45));
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

@@ -1,6 +1,6 @@
 # SPEC 11 — Juego CROAK dentro de la plataforma (variante 2: rana saltarina con combos)
 
-> **Status:** borrador
+> **Status:** implementado
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-10-26
 > **Objective:** Crear Croak como motor TypeScript jugable en `/juegos/croak/jugar`, con una rana que salta entre nenufares, apunta con angulo libre y atrapa insectos encadenando combos, sin vidas sino con temporizador por ronda, usando el HUD, la pausa y el guardado de puntuacion de la plataforma y su ficha en el leaderboard.
