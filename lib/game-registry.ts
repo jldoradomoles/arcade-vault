@@ -5,6 +5,8 @@ import { ArkanoidEngine } from "@/lib/arkanoid/engine";
 import { H, W } from "@/lib/asteroids/constants";
 import { AsteroidsEngine } from "@/lib/asteroids/engine";
 import type { CreateEngine } from "@/lib/game-engine";
+import { H as CROAK_H, W as CROAK_W } from "@/lib/croak/constants";
+import { CroakEngine } from "@/lib/croak/engine";
 import { H as FROGGER_H, W as FROGGER_W } from "@/lib/frogger/constants";
 import { FroggerEngine } from "@/lib/frogger/engine";
 import { H as SNAKE_H, W as SNAKE_W } from "@/lib/snake/constants";
@@ -78,6 +80,18 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
     controls: [
       { keys: ["↑", "↓", "←", "→"], action: "Saltar" },
       { keys: ["W", "S", "A", "D"], action: "Saltar" },
+    ],
+    touchStyle: "arcade",
+  },
+  croak: {
+    width: CROAK_W,
+    height: CROAK_H,
+    createEngine: (canvas, callbacks, options) =>
+      new CroakEngine(canvas, callbacks, options),
+    controls: [
+      { keys: ["←", "→"], action: "Saltar nenúfar" },
+      { keys: ["↑", "↓"], action: "Apuntar" },
+      { keys: ["Espacio"], action: "Disparar lengua" },
     ],
     touchStyle: "arcade",
   },
