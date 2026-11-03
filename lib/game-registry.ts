@@ -118,8 +118,8 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
     controls: [
       { keys: ["←", "↑", "→", "↓"], action: "Mover cursor" },
       { keys: ["Espacio"], action: "Colocar pieza" },
-      { keys: ["R"], action: "Rotar" },
-      { keys: ["D"], action: "Descartar y cambiar tipo" },
+      { keys: ["R", "D"], action: "Rotar / Cambiar tipo" },
     ],
+    touchStyle: "arcade",
   },
 };

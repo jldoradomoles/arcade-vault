@@ -22,8 +22,6 @@ export const UNUSED_PIECE_POINTS = 20;
 export const ALL_SAVED_BONUS = 100;
 export const MAX_DT_MS = 50;
 export const MAX_SCORE = 10_000_000;
-export const BG_WATER = "#0d2137",
-  BG_SHORE = "#2d5a1e";
 
 export type GamePhase = "placing" | "crossing" | "result" | "gameover";
 export type PieceKind = "lilypad" | "log" | "turtle";

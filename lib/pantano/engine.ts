@@ -1,9 +1,7 @@
 import type { GameCallbacks, GameEngine, GameStats } from "@/lib/game-engine";
-import type { SkinId } from "@/lib/game-types";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import {
   ALL_SAVED_BONUS,
-  BG_SHORE,
-  BG_WATER,
   CELL,
   COLS,
   FROG_SAVED_POINTS,
@@ -30,6 +28,7 @@ import {
   type PlacedPiece,
   type WaveInventory,
 } from "./constants";
+import { type PantanoPalette, SKINS } from "./skins";
 import {
   canPlace,
   evaluateWave,
@@ -89,12 +88,16 @@ export class PantanoEngine implements GameEngine {
   private lastStats: GameStats | null = null;
   private gameOverNotified = false;
 
+  // Paleta activa
+  private palette: PantanoPalette;
+
   // ── Constructor ──────────────────────────────────────────────────────────
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: GameCallbacks,
     _options?: { skin?: SkinId },
   ) {
+    this.palette = SKINS[_options?.skin ?? DEFAULT_SKIN];
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D no disponible");
     this.ctx = ctx;
@@ -242,6 +245,18 @@ export class PantanoEngine implements GameEngine {
             this.selectedOrientation === "horizontal"
               ? "vertical"
               : "horizontal";
+        } else {
+          // lilypad/turtle no tienen orientación: R cicla al siguiente tipo (igual que D)
+          const rCount = this.inventoryCount(this.selectedKind);
+          if (rCount <= 0) break;
+          this.decrementInventory(this.selectedKind);
+          const nextAfterR = this.nextAvailableKind();
+          if (nextAfterR === null) {
+            this.startCrossing();
+          } else {
+            this.selectedKind = nextAfterR;
+            if (nextAfterR !== "log") this.selectedOrientation = "horizontal";
+          }
         }
         break;
       case "KeyD": {
@@ -507,17 +522,18 @@ export class PantanoEngine implements GameEngine {
 
   private drawBackground() {
     const { ctx } = this;
+    const p = this.palette;
 
     // Shore top (row 0)
-    ctx.fillStyle = BG_SHORE;
+    ctx.fillStyle = p.bgShore;
     ctx.fillRect(0, 0, W, CELL);
 
     // Water rows 1-13
-    ctx.fillStyle = BG_WATER;
+    ctx.fillStyle = p.bgWater;
     ctx.fillRect(0, CELL, W, (ROWS - 2) * CELL);
 
     // Shore bottom (row 14)
-    ctx.fillStyle = BG_SHORE;
+    ctx.fillStyle = p.bgShore;
     ctx.fillRect(0, SHORE_BOTTOM * CELL, W, CELL);
 
     this.drawGridLines();
@@ -527,7 +543,7 @@ export class PantanoEngine implements GameEngine {
   private drawGridLines() {
     const { ctx } = this;
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.strokeStyle = this.palette.gridLine;
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     for (let c = 1; c < COLS; c++) {
@@ -550,8 +566,8 @@ export class PantanoEngine implements GameEngine {
       const y = curr.row * CELL + CELL / 2;
       const goRight = curr.speed > 0;
       ctx.strokeStyle = curr.diagonal
-        ? "rgba(224,64,251,0.22)"
-        : "rgba(100,180,255,0.20)";
+        ? this.palette.arrowDiagonal
+        : this.palette.arrowNormal;
       ctx.lineWidth = 1;
 
       const startX = goRight ? 30 : 50;
@@ -596,17 +612,18 @@ export class PantanoEngine implements GameEngine {
   // ── Timer bar ─────────────────────────────────────────────────────────────
   private drawTimerBar() {
     const { ctx } = this;
+    const p = this.palette;
     const ratio =
       this.placeTimerMax > 0
         ? Math.max(0, this.placeTimeLeft / this.placeTimerMax)
         : 0;
     const barH = 5;
 
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillStyle = p.hudBarBg;
     ctx.fillRect(0, 0, W, barH);
 
     const color =
-      ratio > 0.5 ? "#4caf50" : ratio > 0.25 ? "#ffea00" : "#f44336";
+      ratio > 0.5 ? p.timerHigh : ratio > 0.25 ? p.timerMid : p.timerLow;
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, W * ratio, barH);
   }
@@ -624,23 +641,26 @@ export class PantanoEngine implements GameEngine {
       this.inventoryCount(this.selectedKind) > 0 &&
       canPlace(this.grid, piece, col, row);
 
+    const p = this.palette;
     ctx.save();
     const ghostAlpha = valid ? 0.35 : 0.18;
-    const borderColor = valid ? "#ffea00" : "#f44336";
-    const fillColor =
+    const borderColor = valid ? p.cursorValid : p.cursorInvalid;
+    const baseFill =
       this.selectedKind === "lilypad"
-        ? `rgba(45,122,30,${ghostAlpha})`
+        ? p.cursorLilypadFill
         : this.selectedKind === "log"
-          ? `rgba(123,74,42,${ghostAlpha})`
-          : `rgba(85,107,47,${ghostAlpha})`;
+          ? p.cursorLogFill
+          : p.cursorTurtleFill;
 
+    ctx.globalAlpha = ghostAlpha;
+    ctx.fillStyle = baseFill;
     for (const [c, r] of cells) {
       if (c >= 0 && c < COLS && r > SHORE_TOP && r < SHORE_BOTTOM) {
-        ctx.fillStyle = fillColor;
         ctx.fillRect(c * CELL + 1, r * CELL + 1, CELL - 2, CELL - 2);
       }
     }
 
+    ctx.globalAlpha = 1;
     ctx.strokeStyle = borderColor;
     ctx.lineWidth = 2;
     ctx.shadowColor = borderColor;
@@ -687,12 +707,13 @@ export class PantanoEngine implements GameEngine {
 
   private drawLilypad(px: number, py: number) {
     const { ctx } = this;
+    const p = this.palette;
     const cx = px + CELL / 2;
     const cy = py + CELL / 2;
     const r = CELL / 2 - 3;
     ctx.save();
-    ctx.fillStyle = "#2d7a2d";
-    ctx.strokeStyle = "#1a5a1a";
+    ctx.fillStyle = p.lilypadFill;
+    ctx.strokeStyle = p.lilypadStroke;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -701,20 +722,21 @@ export class PantanoEngine implements GameEngine {
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(cx, py + 3);
-    ctx.strokeStyle = "#1a5a1a";
+    ctx.strokeStyle = p.lilypadStroke;
     ctx.stroke();
     ctx.restore();
   }
 
   private drawLog(p: PlacedPiece) {
     const { ctx } = this;
+    const pal = this.palette;
     const isH = p.orientation === "horizontal";
     const lw = isH ? LOG_LENGTH * CELL : CELL;
     const lh = isH ? CELL : LOG_LENGTH * CELL;
     const py = p.row * CELL;
     ctx.save();
-    ctx.fillStyle = "#7b4a2a";
-    ctx.strokeStyle = "#5a3520";
+    ctx.fillStyle = pal.logFill;
+    ctx.strokeStyle = pal.logStroke;
     ctx.lineWidth = 1;
     ctx.beginPath();
     (
@@ -722,7 +744,7 @@ export class PantanoEngine implements GameEngine {
     ).roundRect(p.x + 2, py + 2, lw - 4, lh - 4, 4);
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = "rgba(90,53,32,0.5)";
+    ctx.strokeStyle = pal.logGrain;
     ctx.lineWidth = 0.8;
     if (isH) {
       for (let i = 1; i < LOG_LENGTH; i++) {
@@ -744,6 +766,7 @@ export class PantanoEngine implements GameEngine {
 
   private drawTurtle(p: PlacedPiece) {
     const { ctx } = this;
+    const pal = this.palette;
     const py = p.row * CELL;
     const cx = p.x + CELL / 2;
     const cy = py + CELL / 2;
@@ -753,14 +776,14 @@ export class PantanoEngine implements GameEngine {
       : 1;
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = "#556b2f";
-    ctx.strokeStyle = "#3d4f22";
+    ctx.fillStyle = pal.turtleFill;
+    ctx.strokeStyle = pal.turtleStroke;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.ellipse(cx, cy, CELL / 2 - 4, CELL / 2 - 5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = "rgba(100,120,40,0.7)";
+    ctx.strokeStyle = pal.turtleRing;
     ctx.beginPath();
     ctx.ellipse(cx, cy, CELL / 4, CELL / 4, 0, 0, Math.PI * 2);
     ctx.stroke();
@@ -770,14 +793,15 @@ export class PantanoEngine implements GameEngine {
   // ── Inventory bar ─────────────────────────────────────────────────────────
   private drawInventoryBar() {
     const { ctx } = this;
+    const p = this.palette;
     const y = SHORE_BOTTOM * CELL;
     const barH = CELL;
 
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillStyle = p.hudBarBg;
     ctx.fillRect(0, y, W, barH);
 
     const types: PieceKind[] = ["lilypad", "log", "turtle"];
-    const colors = ["#2d7a2d", "#7b4a2a", "#556b2f"];
+    const colors = [p.invLilypadColor, p.invLogColor, p.invTurtleColor];
     const labels = ["NENÚFAR", "TRONCO", "TORTUGA"];
     const sectionW = W / 3;
 
@@ -790,24 +814,27 @@ export class PantanoEngine implements GameEngine {
       const selected = this.selectedKind === kind;
 
       if (selected) {
-        ctx.fillStyle = "rgba(255,234,0,0.12)";
+        ctx.fillStyle = p.invSelectedBg;
         ctx.fillRect(sx + 2, y + 2, sectionW - 4, barH - 4);
       }
 
-      ctx.fillStyle = count > 0 ? colors[i] : "rgba(70,70,70,0.5)";
+      ctx.fillStyle = count > 0 ? colors[i] : p.invEmptyColor;
       ctx.fillRect(cx - 24, cy - 8, 16, 16);
 
       ctx.save();
       ctx.font = `bold ${selected ? 14 : 12}px monospace`;
-      ctx.fillStyle = count > 0 ? (selected ? "#ffea00" : "#ccc") : "#555";
+      ctx.fillStyle =
+        count > 0
+          ? selected
+            ? p.invTextSelected
+            : p.invTextAvailable
+          : p.invTextEmpty;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillText(`×${count}`, cx - 5, cy);
 
       ctx.font = "7px monospace";
-      ctx.fillStyle = selected
-        ? "rgba(255,234,0,0.75)"
-        : "rgba(160,160,160,0.45)";
+      ctx.fillStyle = selected ? p.invLabelSelected : p.invLabelAvailable;
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
       ctx.fillText(labels[i], cx, y + barH - 3);
@@ -820,7 +847,7 @@ export class PantanoEngine implements GameEngine {
     const { ctx } = this;
     ctx.save();
     ctx.font = "bold 13px monospace";
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.fillStyle = this.palette.phaseLabel;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(text, W / 2, CELL / 2);
@@ -837,20 +864,21 @@ export class PantanoEngine implements GameEngine {
       const cx = px + CELL / 2;
       const cy = py + CELL / 2;
 
+      const p = this.palette;
       ctx.save();
       ctx.globalAlpha = frog.saved ? 0.55 : 1;
 
-      // Body
-      ctx.fillStyle = "#22dd44";
-      ctx.strokeStyle = "#18a030";
+      // Cuerpo
+      ctx.fillStyle = p.frogBody;
+      ctx.strokeStyle = p.frogBodyStroke;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.ellipse(cx, cy + 2, CELL / 2 - 5, CELL / 2 - 6, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      // Eyes
-      ctx.fillStyle = "#2eff55";
+      // Ojos
+      ctx.fillStyle = p.frogEye;
       ctx.beginPath();
       ctx.arc(cx - 6, cy - 4, 4, 0, Math.PI * 2);
       ctx.fill();
@@ -858,8 +886,8 @@ export class PantanoEngine implements GameEngine {
       ctx.arc(cx + 6, cy - 4, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pupils
-      ctx.fillStyle = "#001a00";
+      // Pupilas
+      ctx.fillStyle = p.frogPupil;
       ctx.beginPath();
       ctx.arc(cx - 6, cy - 4, 1.8, 0, Math.PI * 2);
       ctx.fill();
@@ -881,7 +909,7 @@ export class PantanoEngine implements GameEngine {
     ctx.font = "bold 11px monospace";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "rgba(255,255,255,0.65)";
+    ctx.fillStyle = this.palette.frogCountText;
     ctx.fillText(
       `RANAS ${saved}/${total}  •  LANZADAS ${launched}`,
       W - 8,
@@ -893,15 +921,16 @@ export class PantanoEngine implements GameEngine {
   // ── Result overlay ────────────────────────────────────────────────────────
   private drawResultOverlay() {
     const { ctx } = this;
+    const p = this.palette;
     const panelW = 380;
     const panelH = 200;
     const px = (W - panelW) / 2;
     const py = (H - panelH) / 2;
 
-    // Panel background
+    // Fondo del panel
     ctx.save();
-    ctx.fillStyle = "rgba(5,15,25,0.88)";
-    ctx.strokeStyle = "#e040fb";
+    ctx.fillStyle = p.resultBg;
+    ctx.strokeStyle = p.accentColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
     (
@@ -912,22 +941,21 @@ export class PantanoEngine implements GameEngine {
     ctx.fill();
     ctx.stroke();
 
-    // Title
+    // Título
     ctx.font = "bold 16px monospace";
-    ctx.fillStyle = "#e040fb";
+    ctx.fillStyle = p.accentColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.fillText(`OLEADA ${this.wave}`, W / 2, py + 14);
 
-    // Stats rows
+    // Filas de estadísticas
     ctx.font = "12px monospace";
-    ctx.fillStyle = "#ccc";
     ctx.textAlign = "left";
     const lx = px + 24;
     const rx = px + panelW - 24;
     let ry = py + 48;
     const row = (label: string, value: string, highlight = false) => {
-      ctx.fillStyle = highlight ? "#ffea00" : "#ccc";
+      ctx.fillStyle = highlight ? p.resultHighlight : p.resultText;
       ctx.textAlign = "left";
       ctx.fillText(label, lx, ry);
       ctx.textAlign = "right";
@@ -949,8 +977,8 @@ export class PantanoEngine implements GameEngine {
       row(`BONUS TODAS SALVADAS`, `+${ALL_SAVED_BONUS}`, true);
     }
 
-    // Divider
-    ctx.strokeStyle = "rgba(224,64,251,0.35)";
+    // Separador
+    ctx.strokeStyle = p.resultDivider;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(lx, ry);
@@ -958,20 +986,20 @@ export class PantanoEngine implements GameEngine {
     ctx.stroke();
     ry += 10;
 
-    // Total
+    // Total de puntos
     ctx.font = "bold 14px monospace";
-    ctx.fillStyle = "#ffea00";
+    ctx.fillStyle = p.resultHighlight;
     ctx.textAlign = "left";
     ctx.fillText("PUNTOS DE OLEADA", lx, ry);
     ctx.textAlign = "right";
     ctx.fillText(`+${this.wavePointsEarned}`, rx, ry);
 
-    // Progress bar (time remaining)
+    // Barra de progreso (tiempo restante)
     const ratio = Math.min(1, this.resultTimer / PantanoEngine.RESULT_MS);
     const barY = py + panelH - 10;
-    ctx.fillStyle = "rgba(224,64,251,0.2)";
+    ctx.fillStyle = p.resultProgressBg;
     ctx.fillRect(px + 4, barY, panelW - 8, 5);
-    ctx.fillStyle = "#e040fb";
+    ctx.fillStyle = p.accentColor;
     ctx.fillRect(px + 4, barY, (panelW - 8) * ratio, 5);
 
     ctx.restore();
@@ -987,19 +1015,20 @@ export class PantanoEngine implements GameEngine {
     const alpha = elapsed < fadeStart ? 1 : 1 - (elapsed - fadeStart) / 500;
 
     const { ctx } = this;
+    const p = this.palette;
     ctx.save();
 
-    // Dim background
+    // Fondo atenuado
     ctx.globalAlpha = alpha * 0.8;
-    ctx.fillStyle = "rgba(5,15,25,0.82)";
+    ctx.fillStyle = p.waveIntroBg;
     ctx.fillRect(0, 0, W, H);
 
     ctx.globalAlpha = alpha;
 
-    // Wave number
+    // Número de oleada
     ctx.font = "bold 52px monospace";
-    ctx.fillStyle = "#e040fb";
-    ctx.shadowColor = "#e040fb";
+    ctx.fillStyle = p.accentColor;
+    ctx.shadowColor = p.accentColor;
     ctx.shadowBlur = 24;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -1007,9 +1036,9 @@ export class PantanoEngine implements GameEngine {
 
     ctx.shadowBlur = 0;
 
-    // Difficulty stats
+    // Estadísticas de dificultad
     ctx.font = "bold 15px monospace";
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = p.waveStatText;
     const secs = Math.round(this.placeTimerMax / 1000);
     ctx.fillText(
       `${this.frogsTotal} RANAS  •  ${secs}s PARA COLOCAR`,
@@ -1017,10 +1046,10 @@ export class PantanoEngine implements GameEngine {
       H / 2 + 8,
     );
 
-    // Diagonal current warning (wave ≥ 4)
+    // Aviso de corrientes diagonales (oleada >= 4)
     if (this.wave >= 4) {
       ctx.font = "bold 12px monospace";
-      ctx.fillStyle = "#e040fb";
+      ctx.fillStyle = p.accentColor;
       ctx.fillText("⚠  CORRIENTES DIAGONALES ACTIVAS", W / 2, H / 2 + 46);
     }
 
