@@ -100,10 +100,12 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
   orbital: {
     width: ORBITAL_W,
     height: ORBITAL_H,
-    createEngine: (canvas, callbacks) => new OrbitalEngine(canvas, callbacks),
+    createEngine: (canvas, callbacks, options) =>
+      new OrbitalEngine(canvas, callbacks, options),
     controls: [
       { keys: ["Ratón"], action: "Apuntar escudo" },
       { keys: ["Espacio"], action: "Pulso" },
     ],
+    touchStyle: "arcade",
   },
 };

@@ -25,12 +25,6 @@ export const PULSE_RADIUS = 200,
   PULSE_COOLDOWN = 8;
 export const MAX_DT = 0.05;
 export const MAX_SCORE = 10_000_000;
-export const BG = "#11111f";
-export const CORE_COLOR = "#ff44cc";
-export const ARC_COLOR = "#ff88ff";
-export const BALL_COLOR = "#ff3399";
-export const RETURNED_COLOR = "#ffccff";
-export const PULSE_COLOR = "rgba(255, 136, 255, 0.35)";
 
 export type Phase = "playing" | "gameover";
 

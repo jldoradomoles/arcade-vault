@@ -9,3 +9,4 @@ Memoria del agente `skin-designer`. Cada fila indica si un juego ya tiene las tr
 | arkanoid  |   ✅    |  ✅  |  ✅   | tiñe spritesheet con ctx.filter (hue-rotate / sepia)                    |
 | snake     |   ✅    |  ✅  |  ✅   | spritesheet de frutas teñido con ctx.filter por skin                    |
 | croak     |   ✅    |  ✅  |  ✅   | vectorial puro: paleta neon (cian/magenta), retro (fósforo ámbar/verde) |
+| orbital   |   ✅    |  ✅  |  ✅   | vectorial puro: neon (cian/magenta), retro (ámbar/verde fósforo)        |

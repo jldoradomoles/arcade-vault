@@ -1,16 +1,13 @@
 import type { GameCallbacks, GameEngine, GameStats } from "@/lib/game-engine";
+import { DEFAULT_SKIN, type SkinId } from "@/lib/game-types";
 import {
-  ARC_COLOR,
   ARC_MAX_TURN,
   ARC_RADIUS,
   ARC_SPAN,
   ARC_THICKNESS,
-  BALL_COLOR,
   BALL_RADIUS,
-  BG,
   COMBO_MAX,
   COMBO_WINDOW,
-  CORE_COLOR,
   CORE_RADIUS,
   CX,
   CY,
@@ -19,14 +16,13 @@ import {
   LIVES_START,
   MAX_DT,
   MAX_SCORE,
-  PULSE_COLOR,
   PULSE_COOLDOWN,
   RETURN_SCORE,
-  RETURNED_COLOR,
   SECONDS_PER_LEVEL,
   W,
   type Ball,
 } from "./constants";
+import { type OrbitalPalette, SKINS } from "./skins";
 import {
   applyPulse,
   ballSpeed,
@@ -45,6 +41,7 @@ interface Explosion {
 
 export class OrbitalEngine implements GameEngine {
   private ctx: CanvasRenderingContext2D;
+  private palette: OrbitalPalette;
 
   private phase: "playing" | "gameover" = "playing";
   private theta = 0; // ángulo actual del escudo (rad)
@@ -74,10 +71,12 @@ export class OrbitalEngine implements GameEngine {
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: GameCallbacks,
+    options?: { skin?: SkinId },
   ) {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D no disponible");
     this.ctx = ctx;
+    this.palette = SKINS[options?.skin ?? DEFAULT_SKIN];
     canvas.width = W;
     canvas.height = H;
   }
@@ -388,7 +387,7 @@ export class OrbitalEngine implements GameEngine {
     const { ctx } = this;
 
     // Fondo
-    ctx.fillStyle = BG;
+    ctx.fillStyle = this.palette.bg;
     ctx.fillRect(0, 0, W, H);
 
     this.drawPulseRing();
@@ -409,7 +408,7 @@ export class OrbitalEngine implements GameEngine {
       // Anillo completo brillante: pulso disponible
       ctx.beginPath();
       ctx.arc(CX, CY, ringRadius, 0, 2 * Math.PI);
-      ctx.strokeStyle = PULSE_COLOR;
+      ctx.strokeStyle = this.palette.pulseColor;
       ctx.lineWidth = 3;
       ctx.stroke();
     } else {
@@ -422,7 +421,7 @@ export class OrbitalEngine implements GameEngine {
         -Math.PI / 2,
         -Math.PI / 2 + filled * 2 * Math.PI,
       );
-      ctx.strokeStyle = PULSE_COLOR;
+      ctx.strokeStyle = this.palette.pulseColor;
       ctx.lineWidth = 3;
       ctx.stroke();
     }
@@ -433,7 +432,9 @@ export class OrbitalEngine implements GameEngine {
     for (const ball of this.balls) {
       ctx.beginPath();
       ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, 2 * Math.PI);
-      ctx.fillStyle = ball.returned ? RETURNED_COLOR : BALL_COLOR;
+      ctx.fillStyle = ball.returned
+        ? this.palette.returnedColor
+        : this.palette.ballColor;
       ctx.fill();
     }
   }
@@ -446,7 +447,7 @@ export class OrbitalEngine implements GameEngine {
       const alpha = 1 - progress;
       ctx.beginPath();
       ctx.arc(exp.x, exp.y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(255, 200, 255, ${alpha})`;
+      ctx.fillStyle = `rgba(${this.palette.explosionRgb}, ${alpha})`;
       ctx.fill();
     }
   }
@@ -455,7 +456,7 @@ export class OrbitalEngine implements GameEngine {
     const { ctx } = this;
     ctx.beginPath();
     ctx.arc(CX, CY, CORE_RADIUS, 0, 2 * Math.PI);
-    ctx.fillStyle = CORE_COLOR;
+    ctx.fillStyle = this.palette.coreColor;
     ctx.fill();
   }
 
@@ -469,7 +470,7 @@ export class OrbitalEngine implements GameEngine {
       this.theta - ARC_SPAN / 2,
       this.theta + ARC_SPAN / 2,
     );
-    ctx.strokeStyle = ARC_COLOR;
+    ctx.strokeStyle = this.palette.arcColor;
     ctx.lineWidth = ARC_THICKNESS;
     ctx.lineCap = "round";
     ctx.stroke();
