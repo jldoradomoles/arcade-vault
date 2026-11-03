@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice">
+<defs>
+  <filter id="g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="glo" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<!-- Background water -->
+<rect width="160" height="100" fill="#0d2137"/>
+<!-- Shore bottom -->
+<rect x="0" y="84" width="160" height="16" fill="#2d5a1e"/>
+<!-- Shore top -->
+<rect x="0" y="0" width="160" height="10" fill="#2d5a1e"/>
+<!-- Grid lines (faint) -->
+<g stroke="#1a3a55" stroke-width=".4" opacity=".6">
+  <line x1="0" y1="18" x2="160" y2="18"/>
+  <line x1="0" y1="26" x2="160" y2="26"/>
+  <line x1="0" y1="34" x2="160" y2="34"/>
+  <line x1="0" y1="42" x2="160" y2="42"/>
+  <line x1="0" y1="50" x2="160" y2="50"/>
+  <line x1="0" y1="58" x2="160" y2="58"/>
+  <line x1="0" y1="66" x2="160" y2="66"/>
+  <line x1="0" y1="74" x2="160" y2="74"/>
+  <line x1="32" y1="10" x2="32" y2="84"/>
+  <line x1="64" y1="10" x2="64" y2="84"/>
+  <line x1="96" y1="10" x2="96" y2="84"/>
+  <line x1="128" y1="10" x2="128" y2="84"/>
+</g>
+<!-- Current arrows row 1 (rightward) -->
+<g fill="none" stroke="#e040fb" stroke-opacity=".3" stroke-width=".8">
+  <path d="M8 22 L24 22 M20 19 L24 22 L20 25"/>
+  <path d="M40 22 L56 22 M52 19 L56 22 L52 25"/>
+  <path d="M72 22 L88 22 M84 19 L88 22 L84 25"/>
+  <path d="M104 22 L120 22 M116 19 L120 22 L116 25"/>
+  <path d="M136 22 L152 22 M148 19 L152 22 L148 25"/>
+</g>
+<!-- Current arrows row 2 (leftward) -->
+<g fill="none" stroke="#e040fb" stroke-opacity=".3" stroke-width=".8">
+  <path d="M24 38 L8 38 M12 35 L8 38 L12 41"/>
+  <path d="M56 38 L40 38 M44 35 L40 38 L44 41"/>
+  <path d="M88 38 L72 38 M76 35 L72 38 L76 41"/>
+  <path d="M120 38 L104 38 M108 35 L104 38 L108 41"/>
+  <path d="M152 38 L136 38 M140 35 L136 38 L140 41"/>
+</g>
+<!-- Current arrows row 3 (rightward) -->
+<g fill="none" stroke="#e040fb" stroke-opacity=".3" stroke-width=".8">
+  <path d="M8 54 L24 54 M20 51 L24 54 L20 57"/>
+  <path d="M40 54 L56 54 M52 51 L56 54 L52 57"/>
+  <path d="M72 54 L88 54 M84 51 L88 54 L84 57"/>
+  <path d="M104 54 L120 54 M116 51 L120 54 L116 57"/>
+</g>
+<!-- Log (horizontal, 3 cells) -->
+<g filter="url(#g)">
+  <rect x="40" y="45" width="56" height="10" rx="2" fill="#7b4a2a" opacity=".9"/>
+  <line x1="40" y1="50" x2="96" y2="50" stroke="#5a3520" stroke-width=".5" opacity=".5"/>
+  <line x1="56" y1="45" x2="56" y2="55" stroke="#5a3520" stroke-width=".5" opacity=".4"/>
+  <line x1="72" y1="45" x2="72" y2="55" stroke="#5a3520" stroke-width=".5" opacity=".4"/>
+</g>
+<!-- Lilypad 1 -->
+<g filter="url(#g)">
+  <ellipse cx="28" cy="64" rx="7" ry="5" fill="#2d7a2d" opacity=".9"/>
+  <path d="M28 59 L28 64" stroke="#1a4a1a" stroke-width=".8" fill="none"/>
+</g>
+<!-- Lilypad 2 -->
+<g filter="url(#g)">
+  <ellipse cx="116" cy="30" rx="7" ry="5" fill="#2d7a2d" opacity=".9"/>
+  <path d="M116 25 L116 30" stroke="#1a4a1a" stroke-width=".8" fill="none"/>
+</g>
+<!-- Cursor (player placing a piece) -->
+<rect x="61" y="27" width="14" height="10" rx="1" fill="none" stroke="#ffea00" stroke-width="1.2" opacity=".85"/>
+<!-- Inventory bar hint -->
+<rect x="0" y="84" width="160" height="16" fill="#1e3a14" opacity=".7"/>
+<g fill="#4caf50" opacity=".8">
+  <ellipse cx="30" cy="92" rx="6" ry="4.5"/>
+  <text x="38" y="95" font-family="monospace" font-size="5" fill="#8bc34a">×3</text>
+</g>
+<g fill="#7b4a2a" opacity=".8">
+  <rect x="68" y="88" width="14" height="7" rx="1"/>
+  <text x="84" y="95" font-family="monospace" font-size="5" fill="#a1887f">×2</text>
+</g>
+<!-- Frogs crossing -->
+<g filter="url(#g)">
+  <!-- Frog 1 on log -->
+  <ellipse cx="55" cy="50" rx="5" ry="4" fill="#22dd44"/>
+  <circle cx="52" cy="48" r="1.8" fill="#2eff55"/>
+  <circle cx="58" cy="48" r="1.8" fill="#2eff55"/>
+  <circle cx="52" cy="48" r=".8" fill="#001a00"/>
+  <circle cx="58" cy="48" r=".8" fill="#001a00"/>
+</g>
+<g filter="url(#g)">
+  <!-- Frog 2 on lilypad -->
+  <ellipse cx="28" cy="63" rx="5" ry="4" fill="#22dd44"/>
+  <circle cx="25" cy="61" r="1.8" fill="#2eff55"/>
+  <circle cx="31" cy="61" r="1.8" fill="#2eff55"/>
+  <circle cx="25" cy="61" r=".8" fill="#001a00"/>
+  <circle cx="31" cy="61" r=".8" fill="#001a00"/>
+</g>
+<g filter="url(#g)">
+  <!-- Frog 3 reached shore -->
+  <ellipse cx="80" cy="6" rx="5" ry="4" fill="#22dd44" opacity=".9"/>
+  <circle cx="77" cy="4" r="1.8" fill="#2eff55" opacity=".9"/>
+  <circle cx="83" cy="4" r="1.8" fill="#2eff55" opacity=".9"/>
+</g>
+<!-- Phase label -->
+<text x="80" y="77" text-anchor="middle" font-family="monospace" font-size="5.5" fill="#e040fb" opacity=".75" filter="url(#glo)">CRUZANDO</text>
+<!-- Magenta glow accent -->
+<circle cx="80" cy="50" r="35" fill="#e040fb" opacity=".04"/>
+</svg>

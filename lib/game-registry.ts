@@ -11,6 +11,8 @@ import { H as ORBITAL_H, W as ORBITAL_W } from "@/lib/orbital/constants";
 import { OrbitalEngine } from "@/lib/orbital/engine";
 import { H as FROGGER_H, W as FROGGER_W } from "@/lib/frogger/constants";
 import { FroggerEngine } from "@/lib/frogger/engine";
+import { H as PANTANO_H, W as PANTANO_W } from "@/lib/pantano/constants";
+import { PantanoEngine } from "@/lib/pantano/engine";
 import { H as SNAKE_H, W as SNAKE_W } from "@/lib/snake/constants";
 import { SnakeEngine } from "@/lib/snake/engine";
 import { H as TETRIS_H, W as TETRIS_W } from "@/lib/tetris/constants";
@@ -107,5 +109,17 @@ export const GAME_REGISTRY: Record<string, GameEntry> = {
       { keys: ["Espacio"], action: "Pulso" },
     ],
     touchStyle: "arcade",
+  },
+  pantano: {
+    width: PANTANO_W,
+    height: PANTANO_H,
+    createEngine: (canvas, callbacks, options) =>
+      new PantanoEngine(canvas, callbacks, options),
+    controls: [
+      { keys: ["←", "↑", "→", "↓"], action: "Mover cursor" },
+      { keys: ["Espacio"], action: "Colocar pieza" },
+      { keys: ["R"], action: "Rotar" },
+      { keys: ["D"], action: "Descartar y cambiar tipo" },
+    ],
   },
 };
