@@ -16,6 +16,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/acceso`);
   }
 
+  if (code.length > 512 || !/^[A-Za-z0-9_\-]+$/.test(code)) {
+    return NextResponse.redirect(`${origin}/acceso`);
+  }
+
   // Colectamos las cookies que Supabase quiere escribir para aplicarlas
   // al redirect final, independientemente del destino.
   const pendingCookies: CookieEntry[] = [];
