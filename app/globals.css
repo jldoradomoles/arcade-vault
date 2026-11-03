@@ -816,6 +816,22 @@ a {
   filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.45));
 }
 
+/* ORBITAL: reactor en el centro rodeado de órbitas de bolas hostiles */
+.cover-orbital {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    #2a0a2e 0,
+    #130818 60%,
+    #05030a
+  );
+}
+.cover-orbital::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/orbital.svg") center / cover no-repeat;
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

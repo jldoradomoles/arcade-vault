@@ -32,6 +32,7 @@ Spec generada en `specs/NN-mobile-<game-id>.md`, pendiente de `/spec-impl`.
 
 Spec implementada y verificada en los cuatro viewports.
 
-| game-id | spec                     | fecha      | notas                                                                |
-| ------- | ------------------------ | ---------- | -------------------------------------------------------------------- |
-| croak   | specs/14-mobile-croak.md | 2026-11-03 | canvas landscape overflow en 667×375; fix 1 línea en game-player.tsx |
+| game-id | spec                       | fecha      | notas                                                                             |
+| ------- | -------------------------- | ---------- | --------------------------------------------------------------------------------- |
+| croak   | specs/14-mobile-croak.md   | 2026-11-03 | canvas landscape overflow en 667×375; fix 1 línea en game-player.tsx              |
+| orbital | specs/15-mobile-orbital.md | 2026-11-03 | landscape overflow cubierto por el fix de croak (72vh maxWidth, sin código nuevo) |

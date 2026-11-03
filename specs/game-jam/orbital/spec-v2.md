@@ -1,6 +1,6 @@
 # SPEC 14 — Juego ORBITAL dentro de la plataforma (variante 2: reactor con combos y pulso)
 
-> **Status:** borrador
+> **Status:** implementado
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-10-29
 > **Objective:** Crear Orbital como motor TypeScript jugable en `/juegos/orbital/jugar`, con un escudo controlado con el ratón, flujo continuo de bolas, combos por choques entre bolas y un pulso repulsor, el HUD, la pausa y el guardado de puntuación de la plataforma y su ficha en el leaderboard.
@@ -192,15 +192,15 @@ Específicos de Orbital (variante 2):
 
 ## Riesgos
 
-| Riesgo                                                          | Mitigación                                                                                       |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Strict Mode duplica motor o listeners                           | `destroy()` cancela el loop y quita los listeners; hay criterio de aceptación                    |
-| `dt` grande tras pausa o cambio de pestaña                      | `dt` acotado a `MAX_DT` y `lastTime` se reinicia al reanudar                                     |
-| Con muchas bolas, la comprobación entre pares es costosa        | Pocas bolas simultáneas (decenas); se compara solo `returned` contra hostiles                    |
-| El pulso empuja bolas fuera de control o las hace atravesar el escudo | El empuje se aplica como velocidad radial acotada, no como teletransporte                  |
-| El clic para el pulso conflictúa con el arrastre táctil         | El pulso táctil va por el botón Espacio de SPEC 10; el clic del canvas se ignora si es sintético |
-| El cursor fuera del canvas deja el escudo sin objetivo          | Se conserva el último ángulo válido                                                              |
-| `Espacio` activa un botón enfocado de la plataforma             | `preventDefault` solo en `Espacio` durante el juego y el canvas no toma el foco de teclado       |
+| Riesgo                                                                | Mitigación                                                                                       |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Strict Mode duplica motor o listeners                                 | `destroy()` cancela el loop y quita los listeners; hay criterio de aceptación                    |
+| `dt` grande tras pausa o cambio de pestaña                            | `dt` acotado a `MAX_DT` y `lastTime` se reinicia al reanudar                                     |
+| Con muchas bolas, la comprobación entre pares es costosa              | Pocas bolas simultáneas (decenas); se compara solo `returned` contra hostiles                    |
+| El pulso empuja bolas fuera de control o las hace atravesar el escudo | El empuje se aplica como velocidad radial acotada, no como teletransporte                        |
+| El clic para el pulso conflictúa con el arrastre táctil               | El pulso táctil va por el botón Espacio de SPEC 10; el clic del canvas se ignora si es sintético |
+| El cursor fuera del canvas deja el escudo sin objetivo                | Se conserva el último ángulo válido                                                              |
+| `Espacio` activa un botón enfocado de la plataforma                   | `preventDefault` solo en `Espacio` durante el juego y el canvas no toma el foco de teclado       |
 
 ## Qué **no** está en esta spec
 
