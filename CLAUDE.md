@@ -4,7 +4,7 @@ Guía para Claude Code (claude.ai/code) al trabajar en este repositorio.
 
 ## Proyecto
 
-Arcade Vault: plataforma para jugar online y competir por la mayor cantidad de puntos. Se desarrolla con Spec Driven Design (`/spec` y `/spec-impl` del paquete `Klerith/fernando-skills`, instalado con `npx skills@latest add Klerith/fernando-skills`). Las specs viven en `specs/NN-*.md`. Hay 11 specs entregadas: pantallas MVP, home/landing, acerca/contacto con Resend, conexión Supabase, Asteroids, leaderboard + tabla `games`, Tetris, Arkanoid, Snake, controles táctiles móvil y gamepad arcade Arkanoid. Frogger tiene su spec en `specs/game-jam/frogger/01-frogger-core.md` (estado: implementado).
+Arcade Vault: plataforma para jugar online y competir por la mayor cantidad de puntos. Se desarrolla con Spec Driven Design (`/spec` y `/spec-impl` del paquete `Klerith/fernando-skills`, instalado con `npx skills@latest add Klerith/fernando-skills`). Las specs viven en `specs/NN-*.md`. Hay 16 specs entregadas: pantallas MVP, home/landing, acerca/contacto con Resend, conexión Supabase, Asteroids, leaderboard + tabla `games`, Tetris, Arkanoid, Snake, controles táctiles móvil, gamepad arcade Arkanoid, OAuth Google/GitHub, correcciones seguridad autenticación, ajustes móviles Croak, Orbital y Pantano. Frogger tiene su spec en `specs/game-jam/frogger/01-frogger-core.md` (estado: implementado).
 
 Responde siempre en español.
 
@@ -62,7 +62,7 @@ Middleware fuera de lo habitual: el archivo se llama `proxy.ts` (no `middleware.
 
 Contrato en `lib/game-engine.ts`; cada juego implementa su `Engine` (`init`, `start`, `pause`, `resume`, `reset`, `dispose`) y se registra en `lib/game-registry.ts` con `width`, `height`, `createEngine` y la línea de ayuda de controles. HUD, pausa, game over, reinicio y guardado de puntuación los pone la plataforma (`components/game-player.tsx`), no el juego. Para añadir uno nuevo: usa `/nuevo-juego` para la spec y luego `/spec-impl`.
 
-- Juegos implementados (ver `references/implemented-games.md`): Asteroids, Tetris, Arkanoid, Snake, Frogger.
+- Juegos implementados (ver `references/implemented-games.md`): Asteroids, Tetris, Arkanoid, Snake, Frogger, Croak, Orbital, Pantano.
 
 ## Convenciones
 
