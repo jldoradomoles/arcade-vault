@@ -44,6 +44,10 @@ Los juegos soportan controles de **teclado**, **gamepad táctil virtual** en mó
 | 10  | `tetris`    | TETRIS    | PUZZLE    | magenta |
 | 11  | `arkanoid`  | ARKANOID  | ARCADE    | yellow  |
 | 12  | `snake`     | SNAKE     | ARCADE    | green   |
+| 13  | `frogger`   | FROGGER   | ARCADE    | green   |
+| 14  | `croak`     | CROAK     | SHOOTER   | cyan    |
+| 15  | `orbital`   | ORBITAL   | ARCADE    | magenta |
+| 15  | `pantano`   | PANTANO   | PUZZLE    | magenta |
 
 > El inventario detallado con estadísticas de partidas está en `references/implemented-games.md`.
 
@@ -88,6 +92,10 @@ arcade-vault/
 │   ├── tetris/                 # Motor Tetris
 │   ├── arkanoid/               # Motor Arkanoid
 │   ├── snake/                  # Motor Snake
+│   ├── frogger/                # Motor Frogger
+│   ├── croak/                  # Motor Croak
+│   ├── orbital/                # Motor Orbital
+│   ├── pantano/                # Motor Pantano
 │   └── supabase/               # Clientes browser / server + tipos generados
 ├── supabase/
 │   ├── seed.sql                # Datos iniciales (juegos)
@@ -117,21 +125,26 @@ Cada funcionalidad parte de una spec numerada en `specs/NN-*.md`. El flujo es:
 2. **Revisar y aprobar** manualmente → estado `aprobado`.
 3. **Implementar** (`/spec-impl` o `/spec-impl-game`) paso a paso con pausas para revisar diffs.
 
-### Specs entregadas (11)
+### Specs entregadas (16)
 
-| #   | Spec                          |
-| --- | ----------------------------- |
-| 01  | Pantallas MVP visuales        |
-| 02  | Home / landing                |
-| 03  | Acerca de + contacto (Resend) |
-| 04  | Conexión Supabase             |
-| 05  | Juego Asteroids               |
-| 06  | Leaderboard + tabla `games`   |
-| 07  | Juego Tetris                  |
-| 08  | Juego Arkanoid                |
-| 09  | Juego Snake                   |
-| 10  | Controles táctiles móvil      |
-| 11  | Gamepad arcade (Arkanoid)     |
+| #   | Spec                                 |
+| --- | ------------------------------------ |
+| 01  | Pantallas MVP visuales               |
+| 02  | Home / landing                       |
+| 03  | Acerca de + contacto (Resend)        |
+| 04  | Conexión Supabase                    |
+| 05  | Juego Asteroids                      |
+| 06  | Leaderboard + tabla `games`          |
+| 07  | Juego Tetris                         |
+| 08  | Juego Arkanoid                       |
+| 09  | Juego Snake                          |
+| 10  | Controles táctiles móvil             |
+| 11  | Gamepad arcade (Arkanoid)            |
+| 12  | OAuth Google / GitHub                |
+| 13  | Correcciones seguridad autenticación |
+| 14  | Ajustes móviles Croak                |
+| 15  | Ajustes móviles Orbital              |
+| 16  | Ajustes móviles Pantano              |
 
 ---
 
@@ -245,6 +258,10 @@ Estado actual:
 | tetris    |   ⬜    |  ⬜  |  ⬜   |
 | arkanoid  |   ✅    |  ✅  |  ✅   |
 | snake     |   ✅    |  ✅  |  ✅   |
+| frogger   |   ⬜    |  ⬜  |  ⬜   |
+| croak     |   ✅    |  ✅  |  ✅   |
+| orbital   |   ✅    |  ✅  |  ✅   |
+| pantano   |   ✅    |  ✅  |  ✅   |
 
 ---
 
