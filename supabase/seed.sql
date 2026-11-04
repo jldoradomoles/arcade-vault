@@ -20,7 +20,10 @@ insert into public.games (id, title, short, long, category, cover, color, sort_o
    'SHOOTER', 'cover-croak', 'cyan', 14),
   ('orbital', 'ORBITAL', 'Apunta tu escudo, encadena choques y protege el reactor.',
    'Un reactor en el centro, un escudo que sigue a tu ratón y un flujo sin fin de bolas hostiles. Devuélvelas contra las demás para encadenar explosiones y subir el combo; usa el pulso cuando te rodeen. Cinco impactos y se acabó.',
-   'ARCADE', 'cover-orbital', 'magenta', 15)
+   'ARCADE', 'cover-orbital', 'magenta', 15),
+  ('pantano', 'PANTANO', 'Coloca troncos y nenúfares para guiar a las ranas hasta la otra orilla.',
+   'Las ranas avanzan solas por un pantano peligroso y necesitan plataformas para no caer al agua. Coloca nenúfares, troncos y tortugas en las casillas de agua para crear caminos seguros. Los troncos se desplazan con la corriente y las tortugas se hunden. Cada nivel trae más ranas y corrientes más rápidas.',
+   'PUZZLE', 'cover-pantano', 'magenta', 16)
 on conflict (id) do nothing;
 
 -- 2. Usuario de prueba con cuenta real: test@arcadevault.gg / PLAYERTEST ---------
@@ -79,7 +82,10 @@ from (values
   ('croak',  780, 11),
   ('orbital', 4800, 3),
   ('orbital', 2600, 8),
-  ('orbital',  950, 14)
+  ('orbital',  950, 14),
+  ('pantano', 3800, 2),
+  ('pantano', 2100, 7),
+  ('pantano',  650, 13)
 ) as t(game_id, score, days)
 where exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-000000000001')
 on conflict (id) do nothing;

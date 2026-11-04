@@ -832,6 +832,23 @@ a {
   background: url("/covers/orbital.svg") center / cover no-repeat;
 }
 
+/* PANTANO: pantano de puzzle con cuadrícula, corrientes y ranas cruzando */
+.cover-pantano {
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    #1a0a2e 0,
+    #0d1a2e 50%,
+    #060d18
+  );
+}
+.cover-pantano::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/covers/pantano.svg") center / cover no-repeat;
+  filter: drop-shadow(0 0 6px rgba(224, 64, 251, 0.35));
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;
